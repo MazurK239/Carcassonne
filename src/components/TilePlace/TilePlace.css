@@ -1,0 +1,11 @@
+.tile {
+    text-align: center;
+    align-items: center;
+    border-style: dotted;
+    border-color: lightgray;
+    border-width: 1px;
+}
+
+.tile:hover {
+    background-color: lightgrey;
+}
