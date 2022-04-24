@@ -1,11 +1,17 @@
 .tile {
-    text-align: center;
-    align-items: center;
     border-style: dotted;
-    border-color: lightgray;
+    border-color: gray;
     border-width: 1px;
+    background: lightyellow;
 }
 
-.tile:hover {
+.valid-tile {
+    border-style: solid;
+    border-color: lightgreen;
+    border-width: 1px;
+    background: white;
+}
+
+.valid-tile:hover {
     background-color: lightgrey;
 }

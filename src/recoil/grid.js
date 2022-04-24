@@ -9,3 +9,8 @@ export const gridParams = atom({
         tileSize: 120,
     }
 })
+
+export const tilesInGrid = atom({
+    key: "tilesInGrid",
+    default: {},
+})
