@@ -10,12 +10,12 @@ export default function TilePlace({
     coords,
     size
 }) {
-    const [tileInPlace, setTileInPlace] = useState(null);
-    const [valid, setValid] = useState(false);
     const tile = useRecoilValue(nextTile);
     const [tileIdx, setTileIdx] = useRecoilState(tileIndex);
     const [grid, setGridParams] = useRecoilState(gridParams);
     const [gridTiles, setTilesInGrid] = useRecoilState(tilesInGrid);
+    const [tileInPlace, setTileInPlace] = useState(null);
+    const [valid, setValid] = useState(false);
 
     const placeTile = function () {
         if (tile && valid && !tileInPlace) {
@@ -66,13 +66,26 @@ export default function TilePlace({
     }
 
     useEffect(() => {
+        if (!Object.keys(gridTiles).length) {
+            setValid(true);
+            return;
+        }
+        if (tileInPlace || !tile) {
+            setValid(false);
+            return;
+        }
         if (
-            !tileInPlace &&
-            (!Object.keys(gridTiles).length ||
-            gridTiles[`${coords[0] - 1}_${coords[1]}`] ||
-            gridTiles[`${coords[0] + 1}_${coords[1]}`] ||
-            gridTiles[`${coords[0]}_${coords[1] - 1}`] ||
-            gridTiles[`${coords[0]}_${coords[1] + 1}`])
+            !gridTiles[`${coords[0] - 1}_${coords[1]}`] && 
+            !gridTiles[`${coords[0] + 1}_${coords[1]}`] &&
+            !gridTiles[`${coords[0]}_${coords[1] - 1}`] &&
+            !gridTiles[`${coords[0]}_${coords[1] + 1}`]
+        ) {
+            setValid(false);
+        } else if (
+            (!gridTiles[`${coords[0] - 1}_${coords[1]}`] || gridTiles[`${coords[0] - 1}_${coords[1]}`].bottom === tile.top) &&
+            (!gridTiles[`${coords[0] + 1}_${coords[1]}`] || gridTiles[`${coords[0] + 1}_${coords[1]}`].top === tile.bottom) &&
+            (!gridTiles[`${coords[0]}_${coords[1] - 1}`] || gridTiles[`${coords[0]}_${coords[1] - 1}`].right === tile.left) &&
+            (!gridTiles[`${coords[0]}_${coords[1] + 1}`] || gridTiles[`${coords[0]}_${coords[1] + 1}`]?.left === tile.right)
         ) {
             setValid(true);
         } else {

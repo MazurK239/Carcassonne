@@ -39,9 +39,9 @@ export default class Tile {
     static rotateCounterClockwise(tile) {
         return {
             top: tile.right,
-            left: tile.bottom,
+            right: tile.bottom,
             bottom: tile.left,
-            right: tile.top,
+            left: tile.top,
             image: tile.image,
             rotationAngle: tile.rotationAngle - 90,
         }
