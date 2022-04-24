@@ -1,10 +1,6 @@
 import { atom, DefaultValue, selector } from "recoil";
 import Tile from "../tiles/Tile";
-import tiles from "../tiles/tilesList"
-
-const drawTiles = function() {
-    return tiles;
-}
+import drawTiles from "../tiles/tilesList"
 
 export const nextTile = atom({
     key: "nextTile",

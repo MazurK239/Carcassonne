@@ -7,14 +7,15 @@ import "./Row.css"
 export default function Row({
     tilesCount,
     tileSize,
-    rowNum
+    rowNum,
+    startIdx
 }) {
-    let columns = Array.from(new Array(tilesCount).keys());
+    let columns = Array(tilesCount).fill().map((_, i) => i + startIdx);;
     
     return (
         <div className="row-container">
             {columns.map((i) => {
-                return <TilePlace text={rowNum * tilesCount + i + 1} size={tileSize} key={i}/>
+                return <TilePlace coords={[rowNum, i]} size={tileSize} key={i}/>
             })}
         </div>
     )

@@ -2,12 +2,12 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    position: fixed;
+    /* position: fixed;
     z-index: 100;
     top: 100px;
     height: 150px;
     width: 100%;
-    background: white;
+    background: white; */
 }
 
 .tileSection {

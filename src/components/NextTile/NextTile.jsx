@@ -26,7 +26,6 @@ export default function NextTile() {
     }
 
     useEffect(() => {
-        console.log("reverting")
         tileRef.current.setAttribute("style", "transform: none");
     }, [tileIdx])
 

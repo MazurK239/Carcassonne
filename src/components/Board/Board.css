@@ -1,3 +1,17 @@
 .board {
-    padding-top: 250px;
+    display: flex;
+    overflow-y: scroll;
+    height: 600px;
+    border-style: solid;
+    border-color: black;
+    border-width: 2px;
+    margin: 0px 50px;
+}
+
+.board-flex-horizontal-align {
+    align-items: center;
+}
+
+.board-flex-vertical-align {
+    justify-content: center;
 }

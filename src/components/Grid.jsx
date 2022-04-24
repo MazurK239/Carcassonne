@@ -4,17 +4,17 @@ import { useWindowSize } from "@react-hook/window-size";
 import Row from "./Row/Row"
 
 export default function Grid({
-    tilesInRow
+    rows: rowsCount,
+    columns: colsCount,
+    tileSize,
+    topLeft,
 }) {
-    const [width, height] = useWindowSize()
-    const tileSize = Number.parseInt(width / (tilesInRow + 2));
-    const tilesInCol = Number.parseInt(height / tileSize);
-    let rows = Array.from(new Array(tilesInCol).keys());
+    let rows = Array(rowsCount).fill().map((_, i) => i + topLeft[0]);
 
     return (
-        <div className="grid-container" style={{margin: `0px ${tileSize}px`}}>
+        <div className="grid-container">
             {rows.map((i) => {
-                return <Row key={i} rowNum={i} tilesCount={tilesInRow} tileSize={tileSize}/>
+                return <Row key={i} rowNum={i} tilesCount={colsCount} startIdx={topLeft[1]} tileSize={tileSize}/>
             })}
         </div>
     )
