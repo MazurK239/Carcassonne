@@ -1,0 +1,9 @@
+.player-info {
+    height: 30px;
+    line-height: 30px;
+    opacity: 0.75;
+}
+
+.add-player-container {
+    display: flex;
+}
