@@ -1,6 +1,7 @@
 import produce from "immer";
 import React, { useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
+import { PLACE_MEEPLE } from "../../constants";
 import { gameState } from "../../recoil/game";
 import { gridParams, tilesInGrid } from "../../recoil/grid";
 import { activePlayer, playersList } from "../../recoil/players";
@@ -33,7 +34,7 @@ export default function TilePlace({
             )
             addRows();
             addCols();
-            setActivePlayer(players[(active.indexInArray + 1) % players.length])
+            setGameStatus(PLACE_MEEPLE);
         }
     }
 
