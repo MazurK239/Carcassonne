@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 
-import { ADD_PLAYERS, IN_PROGRESS, NEW_GAME } from "../../constants"
+import { ADD_PLAYERS, PLACE_TILE, NEW_GAME } from "../../constants"
 import { Dialog } from "@mui/material";
 import { gameState } from "../../recoil/game";
-import { playersList } from "../../recoil/players";
+import { activePlayer, playersList } from "../../recoil/players";
 import { Button, DialogTitle } from "@mui/material";
 import PlayerInfo from "./PlayerInfo"
 import AddPlayerSection from "./AddPlayerSection"
@@ -14,6 +14,7 @@ import "./AddPlayersModal.css"
 export default function AddPlayersModal() {
     const [gameStatus, setGameStatus] = useRecoilState(gameState);
     const [players, setPlayers] = useRecoilState(playersList);
+    const setActivePlayer = useSetRecoilState(activePlayer);
     const [addingPlayer, setAddingPlayer] = useState(false);
 
     const handleClose = function () {
@@ -22,7 +23,8 @@ export default function AddPlayersModal() {
     }
 
     const startGame = function () {
-        setGameStatus(IN_PROGRESS);
+        setGameStatus(PLACE_TILE);
+        setActivePlayer(players[0]);
     }
 
     return (

@@ -1,0 +1,16 @@
+.player-card-container {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    margin: 10px;
+    width: 150px;
+}
+
+.players-section-container-inner {
+    display: flex;
+    flex-direction: column;
+}
+
+.players-section-container {
+    display: flex;
+}

@@ -1,7 +1,9 @@
 import produce from "immer";
 import React, { useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
+import { gameState } from "../../recoil/game";
 import { gridParams, tilesInGrid } from "../../recoil/grid";
+import { activePlayer, playersList } from "../../recoil/players";
 import { nextTile, tileIndex } from "../../recoil/tiles";
 
 import "./TilePlace.css"
@@ -16,6 +18,9 @@ export default function TilePlace({
     const [gridTiles, setTilesInGrid] = useRecoilState(tilesInGrid);
     const [tileInPlace, setTileInPlace] = useState(null);
     const [valid, setValid] = useState(false);
+    const [gameStatus, setGameStatus] = useRecoilState(gameState);
+    const players = useRecoilValue(playersList);
+    const [active, setActivePlayer] = useRecoilState(activePlayer)
 
     const placeTile = function () {
         if (tile && valid && !tileInPlace) {
@@ -28,6 +33,7 @@ export default function TilePlace({
             )
             addRows();
             addCols();
+            setActivePlayer(players[(active.indexInArray + 1) % players.length])
         }
     }
 

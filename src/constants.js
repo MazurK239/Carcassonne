@@ -6,6 +6,7 @@ export const FIELD = "field";
 export const CITY = "city";
 
 export const NEW_GAME = "new_game";
-export const IN_PROGRESS = "in_progress";
-export const FINISHED = "finished";
 export const ADD_PLAYERS = "add_players";
+export const PLACE_TILE = "place_tile";
+export const PLACE_MEEPLE = "place_meeple";
+export const FINISHED = "finished";

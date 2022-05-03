@@ -1,0 +1,31 @@
+.controls-panel {
+    margin: 10px 50px;
+    height: 120px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.new-game-btn-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.new-game-btn {
+    border: solid 1px;
+    padding: 5px;
+    height: 40px;
+    width: 150px;
+    line-height: 40px;
+    background-color: aquamarine;
+    opacity: 0.75;
+    cursor: pointer;
+}
+
+.new-game-btn:hover {
+    opacity: 1;
+}

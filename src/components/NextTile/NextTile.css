@@ -1,8 +1,7 @@
-.container {
+.new-tile-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 120px;
 }
 
 .tileSection {
@@ -14,18 +13,4 @@
 .nextTile {
     transition: all 0.3s ease;
     margin: 10px
-}
-
-.new-game-btn {
-    border: solid 1px;
-    padding: 5px;
-    height: 40px;
-    line-height: 40px;
-    background-color: aquamarine;
-    opacity: 0.75;
-    cursor: pointer;
-}
-
-.new-game-btn:hover {
-    opacity: 1;
 }

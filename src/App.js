@@ -2,7 +2,7 @@ import './App.css';
 import Header from './components/Header/Header';
 import Board from './components/Board/Board';
 import AddPlayersModal from './components/AddPlayersModal/AddPlayersModal';
-import NextTile from './components/NextTile/NextTile';
+import Controls from './components/Controls/Controls';
 import { RecoilRoot } from 'recoil';
 
 function App() {
@@ -11,7 +11,7 @@ function App() {
       <RecoilRoot>
         <AddPlayersModal />
         <Header />
-        <NextTile />
+        <Controls />
         <Board />
       </RecoilRoot>
     </div>
