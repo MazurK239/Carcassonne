@@ -10,6 +10,7 @@ import PlayerInfo from "./PlayerInfo"
 import AddPlayerSection from "./AddPlayerSection"
 
 import "./AddPlayersModal.css"
+import produce from "immer";
 
 export default function AddPlayersModal() {
     const [gameStatus, setGameStatus] = useRecoilState(gameState);
@@ -33,7 +34,9 @@ export default function AddPlayersModal() {
             onClose={handleClose}
         >
             <DialogTitle>Add players (Up to 4)</DialogTitle>
-            <Button onClick={() => setAddingPlayer(true)}>Add player</Button>
+            {players.length < 4 &&
+                <Button onClick={() => setAddingPlayer(true)}>Add player</Button>
+            }
             {addingPlayer &&
                 <AddPlayerSection
                     onPlayerAdded={(player) => {
@@ -41,9 +44,14 @@ export default function AddPlayersModal() {
                         setAddingPlayer(false);
                     }} />}
             {players.map((player, index) => {
-                return <PlayerInfo key={index} name={player.name} color={player.color} />
+                return <PlayerInfo
+                    key={index}
+                    name={player.name}
+                    color={player.color}
+                    removePlayer={() => setPlayers(produce((players) => {players.splice(index, 1)}))}
+                />
             })}
-            <Button onClick={startGame}>Start game</Button>
+            <Button variant="contained" onClick={startGame}>Start game</Button>
         </Dialog>
     )
 }

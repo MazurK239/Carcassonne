@@ -1,9 +1,21 @@
 .player-info {
-    height: 30px;
-    line-height: 30px;
+    height: 40px;
     opacity: 0.75;
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 10px;
+}
+
+.player-info-name {
+    line-height: 40px;
+    text-align: center;
 }
 
 .add-player-container {
     display: flex;
+}
+
+.delete-player-icon {
+    display: flex;
+    align-items: center;
 }
