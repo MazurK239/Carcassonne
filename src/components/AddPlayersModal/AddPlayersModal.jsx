@@ -24,8 +24,10 @@ export default function AddPlayersModal() {
     }
 
     const startGame = function () {
-        setGameStatus(PLACE_TILE);
-        setActivePlayer(players[0]);
+        if (players.length) {
+            setGameStatus(PLACE_TILE);
+            setActivePlayer(players[0]);
+        }
     }
 
     return (
@@ -48,7 +50,7 @@ export default function AddPlayersModal() {
                     key={index}
                     name={player.name}
                     color={player.color}
-                    removePlayer={() => setPlayers(produce((players) => {players.splice(index, 1)}))}
+                    removePlayer={() => setPlayers(produce((players) => { players.splice(index, 1) }))}
                 />
             })}
             <Button variant="contained" onClick={startGame}>Start game</Button>

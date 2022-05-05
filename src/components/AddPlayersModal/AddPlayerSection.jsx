@@ -35,7 +35,9 @@ export default function AddPlayerSection({ onPlayerAdded }) {
                     label="Color"
                     onChange={(e) => setColor(e.target.value)}
                 >
-                    {availableColors.map((color) => <MenuItem value={color.color}>{color.name}</MenuItem>)}
+                    {availableColors.map((color) =>
+                        <MenuItem key={color.color} value={color.color}>{color.name}</MenuItem>
+                    )}
                 </Select>
             </FormControl>
             <Button onClick={addPlayer}>

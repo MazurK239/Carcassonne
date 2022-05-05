@@ -1,9 +1,15 @@
 .player-card-container {
     display: flex;
-    justify-content: space-evenly;
     align-items: center;
     margin: 10px;
-    width: 150px;
+}
+
+.player-card-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px;
+    width: 200px;
 }
 
 .players-section-container-inner {
@@ -13,4 +19,11 @@
 
 .players-section-container {
     display: flex;
+}
+
+.meeples {
+    width: 100px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
 }
