@@ -27,6 +27,7 @@ export default function AddPlayersModal() {
         if (players.length) {
             setGameStatus(PLACE_TILE);
             setActivePlayer(players[0]);
+            console.log(players[0]);
         }
     }
 

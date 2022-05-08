@@ -4,8 +4,10 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import { PLACE_MEEPLE, PLACE_TILE } from "../../constants";
 import { gameState } from "../../recoil/game";
 import { gridParams, tilesInGrid } from "../../recoil/grid";
-import { activePlayer, playersList } from "../../recoil/players";
 import { nextTile, tileIndex } from "../../recoil/tiles";
+import { playersList, activePlayer } from "../../recoil/players";
+import PlaceMeepleZone from "./PlaceMeepleZone";
+import MeepleOnTile from "./MeepleOnTile";
 
 import "./TilePlace.css"
 
@@ -17,11 +19,14 @@ export default function TilePlace({
     const [tileIdx, setTileIdx] = useRecoilState(tileIndex);
     const [grid, setGridParams] = useRecoilState(gridParams);
     const [gridTiles, setTilesInGrid] = useRecoilState(tilesInGrid);
+    const [gameStatus, setGameStatus] = useRecoilState(gameState);
+    const [players, setPlayers] = useRecoilState(playersList);
+    const [active, setActivePlayer] = useRecoilState(activePlayer);
+
     const [tileInPlace, setTileInPlace] = useState(null);
     const [valid, setValid] = useState(false);
-    const [gameStatus, setGameStatus] = useRecoilState(gameState);
-    const players = useRecoilValue(playersList);
-    const [active, setActivePlayer] = useRecoilState(activePlayer)
+    const [readyForMeeple, setReadyForMeeple] = useState(false);
+    const [meeple, setMeeple] = useState(null);
 
     const placeTile = function () {
         if (tile && valid && !tileInPlace) {
@@ -35,6 +40,7 @@ export default function TilePlace({
             addRows();
             addCols();
             setGameStatus(PLACE_MEEPLE);
+            setReadyForMeeple(true);
         }
     }
 
@@ -100,6 +106,19 @@ export default function TilePlace({
         }
     }, [tile, gameStatus])
 
+    useEffect(() => {
+        if (gameStatus === PLACE_TILE) {
+            setReadyForMeeple(false);
+        }
+    }, [gameStatus])
+
+    const handleZoneClick = function(side) {
+        setMeeple({color: active.color, position: side});
+        setPlayers(produce((players) => {players[active.indexInArray].meeples--}))
+        setActivePlayer(players[(active.indexInArray + 1) % players.length])
+        setGameStatus(PLACE_TILE);
+    }
+
     return (
         <div
             className={valid ? "tile valid-tile" : "tile"}
@@ -116,6 +135,14 @@ export default function TilePlace({
                         transform: "rotate(" + tileInPlace.rotationAngle + "deg)"
                     }}
                 />
+            }
+            {
+                readyForMeeple &&
+                <PlaceMeepleZone tileSize={size} onZoneClick={handleZoneClick}/>
+            }
+            {
+                meeple &&
+                <MeepleOnTile tileSize={size} color={meeple.color} position={meeple.position} />
             }
         </div>
     );

@@ -1,10 +1,10 @@
 import React from "react";
 
-export default function MeepleIcon({ color }) {
+export default function MeepleIcon({ color, width = 20, height = 20 }) {
     return (
         <svg
             viewBox="0 0 512 512"
-            style={{ height: 20, width: 20 }}
+            style={{ height, width }}
             xmlns="http://www.w3.org/2000/svg"
         >
             <path

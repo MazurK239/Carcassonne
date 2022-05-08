@@ -15,3 +15,18 @@
 .valid-tile:hover {
     background-color: lightgrey;
 }
+
+.place-meeple-zones {
+    position: relative;
+    z-index: 100;
+}
+
+.meeple-on-tile {
+    position: relative;
+    z-index: 100;
+}
+
+.place-meeple-zones>div {
+    position: relative;
+    background-color: rgba(0, 0, 0, 0.2);
+}
