@@ -8,6 +8,7 @@ import { nextTile, tileIndex } from "../../recoil/tiles";
 import { playersList, activePlayer } from "../../recoil/players";
 import PlaceMeepleZone from "./PlaceMeepleZone";
 import MeepleOnTile from "./MeepleOnTile";
+import { getTileWithIds } from "./utils"
 
 import "./TilePlace.css"
 
@@ -30,15 +31,19 @@ export default function TilePlace({
 
     const placeTile = function () {
         if (tile && valid && !tileInPlace) {
-            setTileInPlace(tile);
+            const tileToPlace = getTileWithIds(tile, coords, gridTiles);
+            // resolve collisions
+            // add new assets and update the existing ones
+            setTileInPlace(tileToPlace);
             setTileIdx(tileIdx + 1);
             setTilesInGrid(
                 produce((tiles) => {
-                    tiles[`${coords[0]}_${coords[1]}`] = tile;
+                    tiles[`${coords[0]}_${coords[1]}`] = tileToPlace;
                 })
             )
             addRows();
             addCols();
+            // handle assets finish
             setGameStatus(PLACE_MEEPLE);
             setReadyForMeeple(true);
         }
@@ -115,6 +120,7 @@ export default function TilePlace({
     const handleZoneClick = function(side) {
         setMeeple({color: active.color, position: side});
         setPlayers(produce((players) => {players[active.indexInArray].meeples--}))
+        // handle assets finish
         setActivePlayer(players[(active.indexInArray + 1) % players.length])
         setGameStatus(PLACE_TILE);
     }

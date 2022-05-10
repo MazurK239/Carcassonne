@@ -10,14 +10,14 @@ import roadStraight from "../images/road_straight.jpeg"
 import roadTurn from "../images/road_turn.jpeg"
 
 const tiles = [
-    new Tile(CITY, FIELD, FIELD, FIELD, cityOneEdge),
-    new Tile(CITY, FIELD, ROAD, ROAD, cityRoadTurnLeft),
-    new Tile(CITY, ROAD, ROAD, FIELD, cityRoadTurnRight),
-    new Tile(CITY, FIELD, CITY, FIELD, cityTwoEdges),
-    new Tile(ROAD, ROAD, ROAD, ROAD, roadFour),
-    new Tile(FIELD, ROAD, ROAD, ROAD, roadThree),
-    new Tile(ROAD, FIELD, ROAD, FIELD, roadStraight),
-    new Tile(FIELD, FIELD, ROAD, ROAD, roadTurn),
+    new Tile(CITY, 1, FIELD, 2, FIELD, 2, FIELD, 2, cityOneEdge),
+    new Tile(CITY, 1, FIELD, 2, ROAD, 3, ROAD, 3, cityRoadTurnLeft),
+    new Tile(CITY, 1, ROAD, 2, ROAD, 2, FIELD, 3, cityRoadTurnRight),
+    new Tile(CITY, 1, FIELD, 2, CITY, 3, FIELD, 2, cityTwoEdges),
+    new Tile(ROAD, 1, ROAD, 2, ROAD, 3, ROAD, 4, roadFour),
+    new Tile(FIELD, 1, ROAD, 2, ROAD, 3, ROAD, 4, roadThree),
+    new Tile(ROAD, 1, FIELD, 2, ROAD, 1, FIELD, 3, roadStraight),
+    new Tile(FIELD, 1, FIELD, 1, ROAD, 2, ROAD, 2, roadTurn),
 ]
 
 const drawTiles = function() {

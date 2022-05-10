@@ -19,14 +19,12 @@ export default function NextTile() {
         const rotatedTile = Tile.rotateClockwise(tile);
         setNextTile(rotatedTile);
         tileRef.current.setAttribute("style", "transform: rotate(" + rotatedTile.rotationAngle + "deg)");
-        console.log(rotatedTile);
     }
 
     const rotateCounterClockwise = function () {
         const rotatedTile = Tile.rotateCounterClockwise(tile);
         setNextTile(rotatedTile);
         tileRef.current.setAttribute("style", "transform: rotate(" + rotatedTile.rotationAngle + "deg)");
-        console.log(rotatedTile);
     }
 
     useEffect(() => {
