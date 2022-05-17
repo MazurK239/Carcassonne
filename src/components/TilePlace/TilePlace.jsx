@@ -8,9 +8,10 @@ import { nextTile, tileIndex } from "../../recoil/tiles";
 import { playersList, activePlayer } from "../../recoil/players";
 import PlaceMeepleZone from "./PlaceMeepleZone";
 import MeepleOnTile from "./MeepleOnTile";
-import { getTileWithIds } from "./utils"
+import { getTileWithIds, collectNewObjectsFromTile } from "./utils"
 
 import "./TilePlace.css"
+import { citiesList, fieldsList, roadsList } from "../../recoil/mapObjects";
 
 export default function TilePlace({
     coords,
@@ -24,6 +25,10 @@ export default function TilePlace({
     const [players, setPlayers] = useRecoilState(playersList);
     const [active, setActivePlayer] = useRecoilState(activePlayer);
 
+    const [roads, setRoads] = useRecoilState(roadsList);
+    const [fields, setFields] = useRecoilState(fieldsList);
+    const [cities, setCities] = useRecoilState(citiesList);
+
     const [tileInPlace, setTileInPlace] = useState(null);
     const [valid, setValid] = useState(false);
     const [readyForMeeple, setReadyForMeeple] = useState(false);
@@ -32,8 +37,9 @@ export default function TilePlace({
     const placeTile = function () {
         if (tile && valid && !tileInPlace) {
             const tileToPlace = getTileWithIds(tile, coords, gridTiles);
-            // resolve collisions
             // add new assets and update the existing ones
+            updateMapObjects(tileToPlace);
+            // resolve collisions
             setTileInPlace(tileToPlace);
             setTileIdx(tileIdx + 1);
             setTilesInGrid(
@@ -46,7 +52,30 @@ export default function TilePlace({
             // handle assets finish
             setGameStatus(PLACE_MEEPLE);
             setReadyForMeeple(true);
+            console.log('roads', roads);
+            console.log('cities', cities);
+            console.log('fields', fields);
         }
+    }
+
+    const updateMapObjects = function (tile) {
+        const objects = collectNewObjectsFromTile(tile);
+        updateObjects(objects.newRoads, setRoads);
+        updateObjects(objects.newCities, setCities);
+        updateObjects(objects.newFields, setFields);
+    }
+
+    const updateObjects = function (newObjects, setter) {
+        setter(produce(objects => {
+            newObjects.forEach(id => {
+                if (objects.find(obj => obj.id === id)) {
+                    const obj = objects.find(obj => obj.id === id);
+                    obj.tileCoords.push(coords);
+                } else {
+                    objects.push({ id, tileCoords: [coords], player: null, finished: false });
+                }
+            })
+        }))
     }
 
     const addRows = function () {
@@ -84,16 +113,16 @@ export default function TilePlace({
     }
 
     useEffect(() => {
-        if (!Object.keys(gridTiles).length) {
-            setValid(true);
-            return;
-        }
         if (gameStatus != PLACE_TILE || tileInPlace || !tile) {
             setValid(false);
             return;
         }
+        if (!Object.keys(gridTiles).length) {
+            setValid(true);
+            return;
+        }
         if (
-            !gridTiles[`${coords[0] - 1}_${coords[1]}`] && 
+            !gridTiles[`${coords[0] - 1}_${coords[1]}`] &&
             !gridTiles[`${coords[0] + 1}_${coords[1]}`] &&
             !gridTiles[`${coords[0]}_${coords[1] - 1}`] &&
             !gridTiles[`${coords[0]}_${coords[1] + 1}`]
@@ -117,9 +146,9 @@ export default function TilePlace({
         }
     }, [gameStatus])
 
-    const handleZoneClick = function(side) {
-        setMeeple({color: active.color, position: side});
-        setPlayers(produce((players) => {players[active.indexInArray].meeples--}))
+    const handleZoneClick = function (side) {
+        setMeeple({ color: active.color, position: side });
+        setPlayers(produce((players) => { players[active.indexInArray].meeples-- }))
         // handle assets finish
         setActivePlayer(players[(active.indexInArray + 1) % players.length])
         setGameStatus(PLACE_TILE);
@@ -144,7 +173,7 @@ export default function TilePlace({
             }
             {
                 readyForMeeple &&
-                <PlaceMeepleZone tileSize={size} onZoneClick={handleZoneClick}/>
+                <PlaceMeepleZone tileSize={size} onZoneClick={handleZoneClick} />
             }
             {
                 meeple &&
