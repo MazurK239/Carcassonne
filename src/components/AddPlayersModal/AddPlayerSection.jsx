@@ -1,6 +1,7 @@
-import { Button, Input, Select, MenuItem, InputLabel, OutlinedInput, FormControl } from "@mui/material";
+import { Button, Select, MenuItem, InputLabel, OutlinedInput, FormControl } from "@mui/material";
 import React, { useState } from "react";
 import { useRecoilValue } from "recoil";
+import { v4 as uuidv4 } from 'uuid';
 import { INITIAL_MEEPLES_COUNT } from "../../constants";
 import { playersList } from "../../recoil/players";
 
@@ -20,7 +21,7 @@ export default function AddPlayerSection({ onPlayerAdded }) {
 
     const addPlayer = function () {
         if (name != '') {
-            onPlayerAdded({ name, color, meeples: INITIAL_MEEPLES_COUNT })
+            onPlayerAdded({ id: uuidv4(), name, color, meeples: INITIAL_MEEPLES_COUNT })
         }
     }
 

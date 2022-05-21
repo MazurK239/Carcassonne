@@ -10,3 +10,10 @@ export const ADD_PLAYERS = "add_players";
 export const PLACE_TILE = "place_tile";
 export const PLACE_MEEPLE = "place_meeple";
 export const FINISHED = "finished";
+
+export const TILE_PROPERTIES_MAPPING = {
+    top: 'idTop',
+    bottom: 'idBottom',
+    left: 'idLeft',
+    right: 'idRight',
+}

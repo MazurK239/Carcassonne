@@ -1,7 +1,14 @@
 import produce from "immer";
 import React, { useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { PLACE_MEEPLE, PLACE_TILE } from "../../constants";
+import { 
+    PLACE_MEEPLE, 
+    PLACE_TILE, 
+    TILE_PROPERTIES_MAPPING, 
+    ROAD, 
+    CITY, 
+    FIELD 
+} from "../../constants";
 import { gameState } from "../../recoil/game";
 import { gridParams, tilesInGrid } from "../../recoil/grid";
 import { nextTile, tileIndex } from "../../recoil/tiles";
@@ -28,7 +35,7 @@ export default function TilePlace({
     const [gridTiles, setTilesInGrid] = useRecoilState(tilesInGrid);
     const [gameStatus, setGameStatus] = useRecoilState(gameState);
     const [players, setPlayers] = useRecoilState(playersList);
-    const [active, setActivePlayer] = useRecoilState(activePlayer);
+    const [player, setActivePlayer] = useRecoilState(activePlayer);
 
     const [roads, setRoads] = useRecoilState(roadsList);
     const [fields, setFields] = useRecoilState(fieldsList);
@@ -188,12 +195,28 @@ export default function TilePlace({
     }, [gameStatus])
 
     const handleZoneClick = function (side) {
-        setMeeple({ color: active.color, position: side });
-        setPlayers(produce((players) => { players[active.indexInArray].meeples-- }))
-        // add player to the object
+        setMeeple({ color: player.color, position: side });
+        setPlayers(produce((players) => { players[player.indexInArray].meeples-- }));
+        addPlayerToMapObject(side);
         // handle assets finish
-        setActivePlayer(players[(active.indexInArray + 1) % players.length])
+        setActivePlayer(players[(player.indexInArray + 1) % players.length]);
         setGameStatus(PLACE_TILE);
+    }
+
+    const addPlayerToMapObject = function(side) {
+        if (tileInPlace[side] === ROAD) {
+            setRoads(produce((roads) => {
+                roads.find(road => road.id == tileInPlace[TILE_PROPERTIES_MAPPING[side]]).player = player.id;
+            }))
+        } else if (tileInPlace[side] === CITY) {
+            setCities(produce((cities) => {
+                cities.find(city => city.id == tileInPlace[TILE_PROPERTIES_MAPPING[side]]).player = player.id;
+            }))
+        } else if (tileInPlace[side] === FIELD) {
+            setFields(produce((fields) => {
+                fields.find(field => field.id == tileInPlace[TILE_PROPERTIES_MAPPING[side]]).player = player.id;
+            }))
+        }
     }
 
     return (
