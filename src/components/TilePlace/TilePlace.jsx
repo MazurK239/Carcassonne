@@ -8,7 +8,12 @@ import { nextTile, tileIndex } from "../../recoil/tiles";
 import { playersList, activePlayer } from "../../recoil/players";
 import PlaceMeepleZone from "./PlaceMeepleZone";
 import MeepleOnTile from "./MeepleOnTile";
-import { getTileWithIds, collectNewObjectsFromTile } from "./utils"
+import { 
+    getTileWithIds, 
+    collectNewObjectsFromTile, 
+    collectCollisionsFromTile, 
+    getTilesWithResolvedCollisions 
+} from "./utils"
 
 import "./TilePlace.css"
 import { citiesList, fieldsList, roadsList } from "../../recoil/mapObjects";
@@ -39,7 +44,7 @@ export default function TilePlace({
             const tileToPlace = getTileWithIds(tile, coords, gridTiles);
             // add new assets and update the existing ones
             updateMapObjects(tileToPlace);
-            // resolve collisions
+            resolveCollisions(tileToPlace);
             setTileInPlace(tileToPlace);
             setTileIdx(tileIdx + 1);
             setTilesInGrid(
@@ -56,6 +61,42 @@ export default function TilePlace({
             console.log('cities', cities);
             console.log('fields', fields);
         }
+    }
+
+    const resolveCollisions = function (tile) {
+        const collisions = collectCollisionsFromTile(tile, coords, gridTiles);
+        resolveCollisionsInTheListOfMapObjects(collisions.roads, setRoads);
+        resolveCollisionsInTheListOfMapObjects(collisions.cities, setCities);
+        resolveCollisionsInTheListOfMapObjects(collisions.fields, setFields);
+        resolveCollisionsInTheGridTiles(collisions);
+    }
+
+    const resolveCollisionsInTheListOfMapObjects = function (newObjects, setter) {
+        setter(produce(objects => {
+            let objectsToReturn = objects;
+            // for each of the ids to replace
+            Object.keys(newObjects).forEach((oldId) => {
+                // we find the object with the old id
+                const oldMapObj = objects.find(obj => obj.id === oldId);
+                // find an object with the correct id
+                const newMapObj = objects.find(obj => obj.id === newObjects[oldId]);
+                // remove them from the list of objects
+                objectsToReturn = objects.filter(obj => (obj.id != oldId) && (obj.id != newObjects[oldId]));
+                // add the new object with the updated coordinates
+                objectsToReturn.push(
+                    {...newMapObj, tileCoords: [...newMapObj.tileCoords, ...oldMapObj.tileCoords]}
+                );
+            })
+            return objectsToReturn;
+        }))
+    }
+
+    const resolveCollisionsInTheGridTiles = function (collisions) {
+        setTilesInGrid(produce(tiles => {
+            getTilesWithResolvedCollisions(collisions.roads, tiles);
+            getTilesWithResolvedCollisions(collisions.cities, tiles);
+            getTilesWithResolvedCollisions(collisions.fields, tiles);
+        }))
     }
 
     const updateMapObjects = function (tile) {
@@ -149,6 +190,7 @@ export default function TilePlace({
     const handleZoneClick = function (side) {
         setMeeple({ color: active.color, position: side });
         setPlayers(produce((players) => { players[active.indexInArray].meeples-- }))
+        // add player to the object
         // handle assets finish
         setActivePlayer(players[(active.indexInArray + 1) % players.length])
         setGameStatus(PLACE_TILE);
@@ -173,7 +215,7 @@ export default function TilePlace({
             }
             {
                 readyForMeeple &&
-                <PlaceMeepleZone tileSize={size} onZoneClick={handleZoneClick} />
+                <PlaceMeepleZone tileSize={size} onZoneClick={handleZoneClick} /> // filter available zones
             }
             {
                 meeple &&
