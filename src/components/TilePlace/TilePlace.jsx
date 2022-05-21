@@ -4,8 +4,7 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import { 
     PLACE_MEEPLE, 
     PLACE_TILE, 
-    TILE_PROPERTIES_MAPPING, 
-    ROAD, 
+    ROAD,
     CITY, 
     FIELD 
 } from "../../constants";
@@ -177,10 +176,10 @@ export default function TilePlace({
         ) {
             setValid(false);
         } else if (
-            (!gridTiles[`${coords[0] - 1}_${coords[1]}`] || gridTiles[`${coords[0] - 1}_${coords[1]}`].bottom === tile.top) &&
-            (!gridTiles[`${coords[0] + 1}_${coords[1]}`] || gridTiles[`${coords[0] + 1}_${coords[1]}`].top === tile.bottom) &&
-            (!gridTiles[`${coords[0]}_${coords[1] - 1}`] || gridTiles[`${coords[0]}_${coords[1] - 1}`].right === tile.left) &&
-            (!gridTiles[`${coords[0]}_${coords[1] + 1}`] || gridTiles[`${coords[0]}_${coords[1] + 1}`]?.left === tile.right)
+            (!gridTiles[`${coords[0] - 1}_${coords[1]}`] || gridTiles[`${coords[0] - 1}_${coords[1]}`].bottom.type === tile.top.type) &&
+            (!gridTiles[`${coords[0] + 1}_${coords[1]}`] || gridTiles[`${coords[0] + 1}_${coords[1]}`].top.type === tile.bottom.type) &&
+            (!gridTiles[`${coords[0]}_${coords[1] - 1}`] || gridTiles[`${coords[0]}_${coords[1] - 1}`].right.type === tile.left.type) &&
+            (!gridTiles[`${coords[0]}_${coords[1] + 1}`] || gridTiles[`${coords[0]}_${coords[1] + 1}`]?.left.type === tile.right.type)
         ) {
             setValid(true);
         } else {
@@ -206,15 +205,15 @@ export default function TilePlace({
     const addPlayerToMapObject = function(side) {
         if (tileInPlace[side] === ROAD) {
             setRoads(produce((roads) => {
-                roads.find(road => road.id == tileInPlace[TILE_PROPERTIES_MAPPING[side]]).player = player.id;
+                roads.find(road => road.id == tileInPlace[side].id).player = player.id;
             }))
         } else if (tileInPlace[side] === CITY) {
             setCities(produce((cities) => {
-                cities.find(city => city.id == tileInPlace[TILE_PROPERTIES_MAPPING[side]]).player = player.id;
+                cities.find(city => city.id == tileInPlace[side].id).player = player.id;
             }))
         } else if (tileInPlace[side] === FIELD) {
             setFields(produce((fields) => {
-                fields.find(field => field.id == tileInPlace[TILE_PROPERTIES_MAPPING[side]]).player = player.id;
+                fields.find(field => field.id == tileInPlace[side].id).player = player.id;
             }))
         }
     }

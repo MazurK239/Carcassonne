@@ -4,13 +4,9 @@ import InitialTilePath from "../images/startingTile.jpeg"
 export default class Tile {
 
     top;
-    idTop;
     bottom;
-    idBottom;
     left;
-    idLeft;
     right;
-    idRight;
     image;
     rotationAngle;
 
@@ -25,14 +21,10 @@ export default class Tile {
         idLeft, 
         imageSrc
     ) {
-        this.top = top;
-        this.idTop = idTop;
-        this.bottom = bottom;
-        this.idBottom = idBottom;
-        this.left = left;
-        this.idLeft = idLeft;
-        this.right = right;
-        this.idRight = idRight;
+        this.top = {type: top, id: idTop};
+        this.bottom = {type: bottom, id: idBottom};
+        this.left = {type: left, id: idLeft};
+        this.right = {type: right, id: idRight};
         const image = new Image();
         image.src = imageSrc;
         this.image = image;
@@ -49,10 +41,6 @@ export default class Tile {
             left: tile.bottom,
             bottom: tile.right,
             right: tile.top,
-            idTop: tile.idLeft,
-            idLeft: tile.idBottom,
-            idBottom: tile.idRight,
-            idRight: tile.idTop,
             image: tile.image,
             rotationAngle: tile.rotationAngle + 90,
         }
@@ -64,10 +52,6 @@ export default class Tile {
             right: tile.bottom,
             bottom: tile.left,
             left: tile.top,
-            idTop: tile.idRight,
-            idRight: tile.idBottom,
-            idBottom: tile.idLeft,
-            idLeft: tile.idTop,
             image: tile.image,
             rotationAngle: tile.rotationAngle - 90,
         }
