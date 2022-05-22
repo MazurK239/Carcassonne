@@ -1,12 +1,12 @@
 import produce from "immer";
 import React, { useEffect, useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
-import { 
-    PLACE_MEEPLE, 
-    PLACE_TILE, 
+import {
+    PLACE_MEEPLE,
+    PLACE_TILE,
     ROAD,
-    CITY, 
-    FIELD 
+    CITY,
+    FIELD
 } from "../../constants";
 import { gameState } from "../../recoil/game";
 import { gridParams, tilesInGrid } from "../../recoil/grid";
@@ -14,11 +14,11 @@ import { nextTile, tileIndex } from "../../recoil/tiles";
 import { playersList, activePlayer } from "../../recoil/players";
 import PlaceMeepleZone from "./PlaceMeepleZone";
 import MeepleOnTile from "./MeepleOnTile";
-import { 
-    getTileWithIds, 
-    collectNewObjectsFromTile, 
-    collectCollisionsFromTile, 
-    getTilesWithResolvedCollisions 
+import {
+    getTileWithIds,
+    collectNewObjectsFromTile,
+    collectCollisionsFromTile,
+    getTilesWithResolvedCollisions
 } from "./utils"
 
 import "./TilePlace.css"
@@ -90,7 +90,7 @@ export default function TilePlace({
                 objectsToReturn = objects.filter(obj => (obj.id != oldId) && (obj.id != newObjects[oldId]));
                 // add the new object with the updated coordinates
                 objectsToReturn.push(
-                    {...newMapObj, tileCoords: [...newMapObj.tileCoords, ...oldMapObj.tileCoords]}
+                    { ...newMapObj, tileCoords: [...newMapObj.tileCoords, ...oldMapObj.tileCoords] }
                 );
             })
             return objectsToReturn;
@@ -202,19 +202,33 @@ export default function TilePlace({
         setGameStatus(PLACE_TILE);
     }
 
-    const addPlayerToMapObject = function(side) {
-        if (tileInPlace[side] === ROAD) {
+    const addPlayerToMapObject = function (side) {
+        if (tileInPlace[side].type === ROAD) {
             setRoads(produce((roads) => {
                 roads.find(road => road.id == tileInPlace[side].id).player = player.id;
             }))
-        } else if (tileInPlace[side] === CITY) {
+        } else if (tileInPlace[side].type === CITY) {
             setCities(produce((cities) => {
                 cities.find(city => city.id == tileInPlace[side].id).player = player.id;
             }))
-        } else if (tileInPlace[side] === FIELD) {
+        } else if (tileInPlace[side].type === FIELD) {
             setFields(produce((fields) => {
                 fields.find(field => field.id == tileInPlace[side].id).player = player.id;
             }))
+        }
+    }
+
+    const canPlaceMeeple = function (side) {
+        if (players[player.indexInArray].meeples === 0) return false;
+        if (side.type === ROAD) {
+            const road = roads.find(road => road.id == side.id);
+            return road.player === null || road.player === player.id;
+        } else if (side.type === CITY) {
+            const city = cities.find(city => city.id == side.id);
+            return city.player === null || city.player === player.id;
+        } else if (side.type === FIELD) {
+            const field = fields.find(field => field.id == side.id);
+            return field.player === null || field.player === player.id;
         }
     }
 
@@ -237,7 +251,16 @@ export default function TilePlace({
             }
             {
                 readyForMeeple &&
-                <PlaceMeepleZone tileSize={size} onZoneClick={handleZoneClick} /> // filter available zones
+                <PlaceMeepleZone
+                    tileSize={size}
+                    onZoneClick={handleZoneClick}
+                    showSide={{
+                        top: canPlaceMeeple(tileInPlace.top),
+                        left: canPlaceMeeple(tileInPlace.left),
+                        bottom: canPlaceMeeple(tileInPlace.bottom),
+                        right: canPlaceMeeple(tileInPlace.right),
+                    }}
+                />
             }
             {
                 meeple &&

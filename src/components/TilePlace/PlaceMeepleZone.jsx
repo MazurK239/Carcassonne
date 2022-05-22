@@ -4,7 +4,8 @@ import "./TilePlace.css"
 
 export default function PlaceMeepleZone({
     tileSize,
-    onZoneClick
+    onZoneClick,
+    showSide,
 }) {
 
     const zoneSize = tileSize / 3;
@@ -29,10 +30,10 @@ export default function PlaceMeepleZone({
             className="place-meeple-zones"
             style={{ width: tileSize, height: tileSize, marginTop: -1 * tileSize }}
         >
-            {getZone(0, zoneSize, 'top')}
-            {getZone(zoneSize, 0, 'left')}
-            {getZone(2 * zoneSize, zoneSize, 'bottom')}
-            {getZone(zoneSize, 2 * zoneSize, 'right')}
+            {showSide.top && getZone(0, zoneSize, 'top')}
+            {showSide.left && getZone(zoneSize, 0, 'left')}
+            {showSide.bottom && getZone(2 * zoneSize, zoneSize, 'bottom')}
+            {showSide.right && getZone(zoneSize, 2 * zoneSize, 'right')}
         </div>
     )
 }
