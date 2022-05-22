@@ -221,14 +221,11 @@ export default function TilePlace({
     const canPlaceMeeple = function (side) {
         if (players[player.indexInArray].meeples === 0) return false;
         if (side.type === ROAD) {
-            const road = roads.find(road => road.id == side.id);
-            return road.player === null || road.player === player.id;
+            return roads.find(road => road.id == side.id).player === null
         } else if (side.type === CITY) {
-            const city = cities.find(city => city.id == side.id);
-            return city.player === null || city.player === player.id;
+            return cities.find(city => city.id == side.id).player === null
         } else if (side.type === FIELD) {
-            const field = fields.find(field => field.id == side.id);
-            return field.player === null || field.player === player.id;
+            return fields.find(field => field.id == side.id).player === null
         }
     }
 
