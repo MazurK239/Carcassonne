@@ -255,7 +255,10 @@ export default function TilePlace({
         if (meeple) {
             [roads, cities, fields].forEach(objList =>
                 objList.forEach(obj => {
-                    if (obj.finished && obj.tileCoords.some(c => c[0] === coords[0] && c[1] === coords[1])) {
+                    if (obj.finished && 
+                        obj.tileCoords.some(c => c[0] === coords[0] && c[1] === coords[1]) &&
+                        obj.id === meeple.objectId
+                    ) {
                         setMeeple(null);
                     }
                 })
@@ -264,7 +267,7 @@ export default function TilePlace({
     }, [roads, cities, fields]);
 
     const handleZoneClick = function (side) {
-        setMeeple({ color: player.color, position: side });
+        setMeeple({ color: player.color, position: side, objectId: tileInPlace[side].id });
         addPlayerToMapObject(side);
         setActivePlayer(players[(player.indexInArray + 1) % players.length]);
         setGameStatus(PLACE_TILE);
