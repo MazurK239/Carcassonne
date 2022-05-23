@@ -18,7 +18,9 @@ import {
     getTileWithIds,
     collectNewObjectsFromTile,
     collectCollisionsFromTile,
-    getTilesWithResolvedCollisions
+    getTilesWithResolvedCollisions,
+    getMapObjBySide,
+    isFinished,
 } from "./utils"
 
 import "./TilePlace.css"
@@ -60,13 +62,66 @@ export default function TilePlace({
             )
             addRows();
             addCols();
-            // handle assets finish
+        }
+    }
+
+    // finish map objects and get ready to place meeple
+    useEffect(() => {
+        if (tileInPlace) {
+            handleAssetsFinish(tileInPlace);
             setGameStatus(PLACE_MEEPLE);
             setReadyForMeeple(true);
+            console.log('before placing meeple')
             console.log('roads', roads);
             console.log('cities', cities);
             console.log('fields', fields);
         }
+    }, [tileInPlace])
+
+    const handleAssetsFinish = function (tile) {
+        // find the finished assets
+        const finishedMapObjects = { roads: [], cities: [], fields: [] };
+        Object.values(tile.getSides()).forEach(side => {
+            const mapObj = getMapObjBySide(side, roads, cities, fields);
+            if (isFinished(mapObj, gridTiles)) {
+                if (mapObj.type === ROAD) {
+                    finishedMapObjects.roads.push(mapObj);
+                } else if (mapObj.type === CITY) {
+                    finishedMapObjects.cities.push(mapObj);
+                } else if (mapObj.type === FIELD) {
+                    finishedMapObjects.fields.push(mapObj);
+                }
+            }
+        })
+        // find the finished churches
+        // set the finished: true and remove player
+        setRoads(produce(roads => {
+            finishedMapObjects.roads.forEach(road => {
+                roads.find(r => r.id === road.id).finished = true;
+                // roads.find(r => r.id === road.id).player = null;
+            });
+        }))
+        setCities(produce(cities => {
+            finishedMapObjects.cities.forEach(city => {
+                cities.find(c => c.id === city.id).finished = true;
+                // cities.find(c => c.id === city.id).player = null;
+            });
+        }))
+        setFields(produce(fields => {
+            finishedMapObjects.fields.forEach(field => {
+                fields.find(f => f.id === field.id).finished = true;
+                // fields.find(f => f.id === field.id).player = null;
+            });
+        }))
+        // return meeples
+        setPlayers(produce(players => {
+            Object.values(finishedMapObjects).forEach(objType =>
+                objType.forEach(obj => {
+                    const player = players.find(p => p.id === obj.player)
+                    if (player) player.meeples++;
+                })
+            );
+        }))
     }
 
     const resolveCollisions = function (tile) {
@@ -107,19 +162,19 @@ export default function TilePlace({
 
     const updateMapObjects = function (tile) {
         const objects = collectNewObjectsFromTile(tile);
-        updateObjects(objects.newRoads, setRoads);
-        updateObjects(objects.newCities, setCities);
-        updateObjects(objects.newFields, setFields);
+        updateObjects(objects.newRoads, setRoads, ROAD);
+        updateObjects(objects.newCities, setCities, CITY);
+        updateObjects(objects.newFields, setFields, FIELD);
     }
 
-    const updateObjects = function (newObjects, setter) {
+    const updateObjects = function (newObjects, setter, type) {
         setter(produce(objects => {
             newObjects.forEach(id => {
                 if (objects.find(obj => obj.id === id)) {
                     const obj = objects.find(obj => obj.id === id);
                     obj.tileCoords.push(coords);
                 } else {
-                    objects.push({ id, tileCoords: [coords], player: null, finished: false });
+                    objects.push({ id, type, tileCoords: [coords], player: null, finished: false });
                 }
             })
         }))
@@ -159,6 +214,7 @@ export default function TilePlace({
         }
     }
 
+    // calclate valid places to put tiles
     useEffect(() => {
         if (gameStatus != PLACE_TILE || tileInPlace || !tile) {
             setValid(false);
@@ -187,34 +243,63 @@ export default function TilePlace({
         }
     }, [tile, gameStatus])
 
+    // remove meeple zones from the tile
     useEffect(() => {
         if (gameStatus === PLACE_TILE) {
             setReadyForMeeple(false);
         }
     }, [gameStatus])
 
+    // delete meeple from tile if it is on the finished object
+    useEffect(() => {
+        if (meeple) {
+            [roads, cities, fields].forEach(objList =>
+                objList.forEach(obj => {
+                    if (obj.finished && obj.tileCoords.some(c => c[0] === coords[0] && c[1] === coords[1])) {
+                        setMeeple(null);
+                    }
+                })
+            )
+        }
+    }, [roads, cities, fields]);
+
     const handleZoneClick = function (side) {
         setMeeple({ color: player.color, position: side });
-        setPlayers(produce((players) => { players[player.indexInArray].meeples-- }));
         addPlayerToMapObject(side);
-        // handle assets finish
         setActivePlayer(players[(player.indexInArray + 1) % players.length]);
         setGameStatus(PLACE_TILE);
     }
 
     const addPlayerToMapObject = function (side) {
+        // we need to return meeple immediately if it is placed on the just finished object
+        let returnMeeple = false;
         if (tileInPlace[side].type === ROAD) {
             setRoads(produce((roads) => {
-                roads.find(road => road.id == tileInPlace[side].id).player = player.id;
+                const road = roads.find(r => r.id == tileInPlace[side].id);
+                road.player = player.id;
+                if (road.finished) {
+                    returnMeeple = true;
+                }
             }))
         } else if (tileInPlace[side].type === CITY) {
             setCities(produce((cities) => {
-                cities.find(city => city.id == tileInPlace[side].id).player = player.id;
+                const city = cities.find(c => c.id == tileInPlace[side].id);
+                city.player = player.id;
+                if (city.finished) {
+                    returnMeeple = true;
+                }
             }))
         } else if (tileInPlace[side].type === FIELD) {
             setFields(produce((fields) => {
-                fields.find(field => field.id == tileInPlace[side].id).player = player.id;
+                const field = fields.find(f => f.id == tileInPlace[side].id);
+                field.player = player.id;
+                if (field.finished) {
+                    returnMeeple = true;
+                }
             }))
+        }
+        if (!returnMeeple) {
+            setPlayers(produce((players) => { players[player.indexInArray].meeples-- }));
         }
     }
 

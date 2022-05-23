@@ -7,7 +7,10 @@ export function getTileWithIds(tile, coords, gridTiles) {
         top: {...tile.top}, 
         bottom: {...tile.bottom}, 
         left: {...tile.left}, 
-        right: {...tile.right}
+        right: {...tile.right},
+    };
+    newTile.getSides = function () {
+        return { top: this.top, bottom: this.bottom, right: this.right, left: this.left }
     };
     const idsMap = new Map();
 
@@ -118,4 +121,31 @@ export function getTilesWithResolvedCollisions(collisionsObj, tiles) {
             })
         })
     })
+}
+
+export function getMapObjBySide(side, roads, cities, fields) {
+    if (side.type === ROAD) {
+        return roads.find(road => road.id === side.id);
+    } else if (side.type === CITY) {
+        return cities.find(city => city.id === side.id);
+    } else if (side.type === FIELD) {
+        return fields.find(field => field.id === side.id);
+    } else return null;
+}
+
+export function isFinished(mapObj, tilesInGrid) {
+    let finished = true;
+    for(let tileCoords of mapObj.tileCoords) {
+        const tile = tilesInGrid[`${tileCoords[0]}_${tileCoords[1]}`];
+        if (
+            tile.top.id === mapObj.id && !mapObj.tileCoords.some(c => c[0] === tileCoords[0] - 1 && c[1] === tileCoords[1]) ||
+            tile.bottom.id === mapObj.id && !mapObj.tileCoords.some(c => c[0] === tileCoords[0] + 1 && c[1] === tileCoords[1]) ||
+            tile.left.id === mapObj.id && !mapObj.tileCoords.some(c => c[0] === tileCoords[0] && c[1] === tileCoords[1] - 1) ||
+            tile.right.id === mapObj.id && !mapObj.tileCoords.some(c => c[0] === tileCoords[0] && c[1] === tileCoords[1] + 1)
+        ) {
+            finished = false;
+            break;
+        }
+    }
+    return finished;
 }

@@ -31,6 +31,10 @@ export default class Tile {
         this.rotationAngle = 0;
     }
 
+    getSides() {
+        return { top: this.top, bottom: this.bottom, right: this.right, left: this.left };
+    }
+
     static initialTile() {
         return new Tile(CITY, 1, ROAD, 2, FIELD, 3, ROAD, 2, InitialTilePath);
     }
