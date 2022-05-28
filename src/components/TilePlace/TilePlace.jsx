@@ -84,38 +84,35 @@ export default function TilePlace({
         Object.values(tile.getSides()).forEach(side => {
             const mapObj = getMapObjBySide(side, roads, cities, fields);
             if (isFinished(mapObj, gridTiles)) {
-                if (mapObj.type === ROAD) {
+                if (mapObj.type === ROAD && !finishedMapObjects.roads.some(r => r.id === mapObj.id)) {
                     finishedMapObjects.roads.push(mapObj);
-                } else if (mapObj.type === CITY) {
+                } else if (mapObj.type === CITY && !finishedMapObjects.cities.some(c => c.id === mapObj.id)) {
                     finishedMapObjects.cities.push(mapObj);
-                } else if (mapObj.type === FIELD) {
+                } else if (mapObj.type === FIELD && !finishedMapObjects.fields.some(f => f.id === mapObj.id)) {
                     finishedMapObjects.fields.push(mapObj);
                 }
             }
         })
         // find the finished churches
-        // set the finished: true and remove player
+        // set the finished: true
         setRoads(produce(roads => {
             finishedMapObjects.roads.forEach(road => {
                 roads.find(r => r.id === road.id).finished = true;
-                // roads.find(r => r.id === road.id).player = null;
             });
         }))
         setCities(produce(cities => {
             finishedMapObjects.cities.forEach(city => {
                 cities.find(c => c.id === city.id).finished = true;
-                // cities.find(c => c.id === city.id).player = null;
             });
         }))
         setFields(produce(fields => {
             finishedMapObjects.fields.forEach(field => {
                 fields.find(f => f.id === field.id).finished = true;
-                // fields.find(f => f.id === field.id).player = null;
             });
         }))
         // return meeples
         setPlayers(produce(players => {
-            Object.values(finishedMapObjects).forEach(objType =>
+            [finishedMapObjects.roads, finishedMapObjects.cities].forEach(objType =>
                 objType.forEach(obj => {
                     const player = players.find(p => p.id === obj.player)
                     if (player) player.meeples++;
@@ -253,9 +250,9 @@ export default function TilePlace({
     // delete meeple from tile if it is on the finished object
     useEffect(() => {
         if (meeple) {
-            [roads, cities, fields].forEach(objList =>
+            [roads, cities].forEach(objList =>
                 objList.forEach(obj => {
-                    if (obj.finished && 
+                    if (obj.finished &&
                         obj.tileCoords.some(c => c[0] === coords[0] && c[1] === coords[1]) &&
                         obj.id === meeple.objectId
                     ) {
