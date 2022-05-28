@@ -2,14 +2,9 @@
     display: flex;
     align-items: center;
     margin: 10px;
-}
-
-.player-card-info {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 10px;
-    width: 200px;
+    padding-left: 10px;
+    border-style: solid;
+    border-width: 1px;
 }
 
 .players-section-container-inner {
@@ -21,8 +16,25 @@
     display: flex;
 }
 
-.meeples {
+.player-card-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px;
+    width: 200px;
+}
+
+.player-card-name {
+    width: 80px;
+    text-align: left;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.player-card-meeples {
     width: 100px;
+    padding-left: 10px;
     display: flex;
     flex-direction: row;
     justify-content: flex-start;

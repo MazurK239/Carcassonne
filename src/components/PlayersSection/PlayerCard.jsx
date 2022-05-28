@@ -16,14 +16,15 @@ export default function PlayerCard({ player, active }) {
                 height: "10px",
             }} />
             <div className="player-card-info">
-                <Typography maxWidth={100}>{player.name}</Typography>
-                <div className="meeples">
+                <Typography className="player-card-name">{player.name}</Typography>
+                <div className="player-card-meeples">
                     {meeples.map((i) =>
                         <div key={i} style={{ marginLeft: -10 }}>
                             <MeepleIcon color={player.color} />
                         </div>
                     )}
                 </div>
+                <div>{player.score}</div>
             </div>
         </div>
     )

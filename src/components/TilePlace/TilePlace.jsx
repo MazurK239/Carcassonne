@@ -110,14 +110,22 @@ export default function TilePlace({
                 fields.find(f => f.id === field.id).finished = true;
             });
         }))
-        // return meeples
+        // return meeples and add score
         setPlayers(produce(players => {
-            [finishedMapObjects.roads, finishedMapObjects.cities].forEach(objType =>
-                objType.forEach(obj => {
-                    const player = players.find(p => p.id === obj.player)
-                    if (player) player.meeples++;
-                })
-            );
+            finishedMapObjects.roads.forEach(road => {
+                const player = players.find(p => p.id === road.player)
+                if (player) {
+                    player.meeples++;
+                    player.score += road.tileCoords.length;
+                } 
+            })
+            finishedMapObjects.cities.forEach(city => {
+                const player = players.find(p => p.id === city.player)
+                if (player) {
+                    player.meeples++;
+                    player.score += city.tileCoords.length * 2;
+                }
+            })
         }))
     }
 
@@ -273,12 +281,14 @@ export default function TilePlace({
     const addPlayerToMapObject = function (side) {
         // we need to return meeple immediately if it is placed on the just finished object
         let returnMeeple = false;
+        let scoreToAdd = 0;
         if (tileInPlace[side].type === ROAD) {
             setRoads(produce((roads) => {
                 const road = roads.find(r => r.id == tileInPlace[side].id);
                 road.player = player.id;
                 if (road.finished) {
                     returnMeeple = true;
+                    scoreToAdd = road.tileCoords.length;
                 }
             }))
         } else if (tileInPlace[side].type === CITY) {
@@ -287,19 +297,19 @@ export default function TilePlace({
                 city.player = player.id;
                 if (city.finished) {
                     returnMeeple = true;
+                    scoreToAdd = city.tileCoords.length * 2;
                 }
             }))
         } else if (tileInPlace[side].type === FIELD) {
             setFields(produce((fields) => {
-                const field = fields.find(f => f.id == tileInPlace[side].id);
-                field.player = player.id;
-                if (field.finished) {
-                    returnMeeple = true;
-                }
+                fields.find(f => f.id == tileInPlace[side].id).player = player.id;
             }))
         }
+        // place meeple or increase score
         if (!returnMeeple) {
             setPlayers(produce((players) => { players[player.indexInArray].meeples-- }));
+        } else {
+            setPlayers(produce((players) => { players[player.indexInArray].score += scoreToAdd }));
         }
     }
 

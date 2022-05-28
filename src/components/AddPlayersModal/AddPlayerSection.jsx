@@ -21,7 +21,7 @@ export default function AddPlayerSection({ onPlayerAdded }) {
 
     const addPlayer = function () {
         if (name != '') {
-            onPlayerAdded({ id: uuidv4(), name, color, meeples: INITIAL_MEEPLES_COUNT })
+            onPlayerAdded({ id: uuidv4(), name, color, meeples: INITIAL_MEEPLES_COUNT, score: 0 })
         }
     }
 
