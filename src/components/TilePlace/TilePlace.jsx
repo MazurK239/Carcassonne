@@ -150,7 +150,11 @@ export default function TilePlace({
                 objectsToReturn = objects.filter(obj => (obj.id != oldId) && (obj.id != newObjects[oldId]));
                 // add the new object with the updated coordinates
                 objectsToReturn.push(
-                    { ...newMapObj, tileCoords: [...newMapObj.tileCoords, ...oldMapObj.tileCoords] }
+                    { 
+                        ...newMapObj, 
+                        tileCoords: [...newMapObj.tileCoords, ...oldMapObj.tileCoords],
+                        player: newMapObj.player || oldMapObj.player,
+                    }
                 );
             })
             return objectsToReturn;
