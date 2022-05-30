@@ -14,3 +14,8 @@ export const fieldsList = atom({
     key: "fieldsList",
     default: [],
 })
+
+export const updatesAfterResolvingCollisions = atom({
+    key: "updatesAfterResolvingCollisions",
+    default: {},
+})

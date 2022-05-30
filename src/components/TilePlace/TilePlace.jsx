@@ -21,10 +21,11 @@ import {
     getTilesWithResolvedCollisions,
     getMapObjBySide,
     isFinished,
+    determinePlayersToGetScores,
 } from "./utils"
 
 import "./TilePlace.css"
-import { citiesList, fieldsList, roadsList } from "../../recoil/mapObjects";
+import { citiesList, fieldsList, roadsList, updatesAfterResolvingCollisions } from "../../recoil/mapObjects";
 
 export default function TilePlace({
     coords,
@@ -37,6 +38,7 @@ export default function TilePlace({
     const [gameStatus, setGameStatus] = useRecoilState(gameState);
     const [players, setPlayers] = useRecoilState(playersList);
     const [player, setActivePlayer] = useRecoilState(activePlayer);
+    const [updatesAfterCollisions, setUpdatesAfterCollisions] = useRecoilState(updatesAfterResolvingCollisions);
 
     const [roads, setRoads] = useRecoilState(roadsList);
     const [fields, setFields] = useRecoilState(fieldsList);
@@ -113,17 +115,23 @@ export default function TilePlace({
         // return meeples and add score
         setPlayers(produce(players => {
             finishedMapObjects.roads.forEach(road => {
-                const player = players.find(p => p.id === road.player)
-                if (player) {
-                    player.meeples++;
-                    player.score += road.tileCoords.length;
-                } 
+                if (Object.keys(road.players).length != 0) {
+                    const winnerIds = determinePlayersToGetScores(road.players);
+                    Object.keys(road.players).forEach(id => {
+                        const player = players.find(p => p.id === id);
+                        player.meeples += road.players[id];
+                        if (winnerIds.includes(id)) player.score += road.tileCoords.length;    
+                    })
+                }
             })
             finishedMapObjects.cities.forEach(city => {
-                const player = players.find(p => p.id === city.player)
-                if (player) {
-                    player.meeples++;
-                    player.score += city.tileCoords.length * 2;
+                if (Object.keys(city.players).length != 0) {
+                    const winnerIds = determinePlayersToGetScores(city.players);
+                    Object.keys(city.players).forEach(id => {
+                        const player = players.find(p => p.id === id);
+                        player.meeples += city.players[id];
+                        if (winnerIds.includes(id)) player.score += city.tileCoords.length * 2;    
+                    })
                 }
             })
         }))
@@ -135,6 +143,12 @@ export default function TilePlace({
         resolveCollisionsInTheListOfMapObjects(collisions.cities, setCities);
         resolveCollisionsInTheListOfMapObjects(collisions.fields, setFields);
         resolveCollisionsInTheGridTiles(collisions);
+        setUpdatesAfterCollisions({
+            ...collisions.roads, 
+            ...collisions.cities, 
+            ...collisions.fields, 
+            ...updatesAfterCollisions
+        });
     }
 
     const resolveCollisionsInTheListOfMapObjects = function (newObjects, setter) {
@@ -148,18 +162,36 @@ export default function TilePlace({
                 const newMapObj = objects.find(obj => obj.id === newObjects[oldId]);
                 // remove them from the list of objects
                 objectsToReturn = objects.filter(obj => (obj.id != oldId) && (obj.id != newObjects[oldId]));
-                // add the new object with the updated coordinates
-                objectsToReturn.push(
-                    { 
+                // add the new object with the updated coordinates and players
+                const tempObj = 
+                { 
+                    ...newMapObj, 
                         ...newMapObj, 
-                        tileCoords: [...newMapObj.tileCoords, ...oldMapObj.tileCoords],
-                        player: newMapObj.player || oldMapObj.player,
+                    ...newMapObj, 
+                        ...newMapObj, 
+                    ...newMapObj, 
+                    tileCoords: [...newMapObj.tileCoords, ...oldMapObj.tileCoords],
+                    players: {...newMapObj.players},
+                }
+                Object.keys(oldMapObj.players).forEach(playerId => {
+                    if (tempObj.players[playerId]) {
+                        tempObj.players[playerId]++;
+                    } else {
+                        tempObj.players[playerId] = 1;
                     }
-                );
+                })
+                objectsToReturn.push(tempObj);
             })
             return objectsToReturn;
         }))
     }
+
+    // change ids on the placed meeples after the collisions are resolved
+    useEffect(() => {
+        if (meeple && updatesAfterCollisions[meeple.objectId]) {
+            setMeeple({...meeple, objectId: updatesAfterCollisions[meeple.objectId]});
+        }
+    }, [updatesAfterCollisions])
 
     const resolveCollisionsInTheGridTiles = function (collisions) {
         setTilesInGrid(produce(tiles => {
@@ -183,7 +215,7 @@ export default function TilePlace({
                     const obj = objects.find(obj => obj.id === id);
                     obj.tileCoords.push(coords);
                 } else {
-                    objects.push({ id, type, tileCoords: [coords], player: null, finished: false });
+                    objects.push({ id, type, tileCoords: [coords], players: {}, finished: false });
                 }
             })
         }))
@@ -289,7 +321,7 @@ export default function TilePlace({
         if (tileInPlace[side].type === ROAD) {
             setRoads(produce((roads) => {
                 const road = roads.find(r => r.id == tileInPlace[side].id);
-                road.player = player.id;
+                road.players[player.id] = 1;
                 if (road.finished) {
                     returnMeeple = true;
                     scoreToAdd = road.tileCoords.length;
@@ -298,7 +330,7 @@ export default function TilePlace({
         } else if (tileInPlace[side].type === CITY) {
             setCities(produce((cities) => {
                 const city = cities.find(c => c.id == tileInPlace[side].id);
-                city.player = player.id;
+                city.players[player.id] = 1;
                 if (city.finished) {
                     returnMeeple = true;
                     scoreToAdd = city.tileCoords.length * 2;
@@ -306,7 +338,7 @@ export default function TilePlace({
             }))
         } else if (tileInPlace[side].type === FIELD) {
             setFields(produce((fields) => {
-                fields.find(f => f.id == tileInPlace[side].id).player = player.id;
+                fields.find(f => f.id == tileInPlace[side].id).players[player.id] = 1;
             }))
         }
         // place meeple or increase score
@@ -320,11 +352,11 @@ export default function TilePlace({
     const canPlaceMeeple = function (side) {
         if (players[player.indexInArray].meeples === 0) return false;
         if (side.type === ROAD) {
-            return roads.find(road => road.id == side.id).player === null
+            return Object.keys(roads.find(road => road.id == side.id).players).length === 0
         } else if (side.type === CITY) {
-            return cities.find(city => city.id == side.id).player === null
+            return Object.keys(cities.find(city => city.id == side.id).players).length === 0
         } else if (side.type === FIELD) {
-            return fields.find(field => field.id == side.id).player === null
+            return Object.keys(fields.find(field => field.id == side.id).players).length === 0
         }
     }
 

@@ -149,3 +149,14 @@ export function isFinished(mapObj, tilesInGrid) {
     }
     return finished;
 }
+
+export function determinePlayersToGetScores(playersObj) {
+    const playerIds = [];
+    const maxMeeplesOnObject = Object.values(playersObj).sort((a, b) => b - a)[0];
+    Object.keys(playersObj).forEach(id => {
+        if (playersObj[id] === maxMeeplesOnObject) {
+            playerIds.push(id);
+        }
+    })
+    return playerIds;
+}
