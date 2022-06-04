@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import produce from "immer";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import { nextTile, tileIndex, lastPlacedTile } from "./recoil/tiles";
-import { playersList, activePlayer } from "./recoil/players";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { lastPlacedTile } from "./recoil/tiles";
+import { playersList } from "./recoil/players";
 import { tilesInGrid } from "./recoil/grid";
+import { gameState } from "./recoil/game";
 import { citiesList, fieldsList, roadsList, updatesAfterResolvingCollisions } from "./recoil/mapObjects";
 import {
-    getTileWithIds,
     collectNewObjectsFromTile,
     collectCollisionsFromTile,
     getTilesWithResolvedCollisions,
@@ -15,11 +15,11 @@ import {
     determinePlayersToGetScores,
 } from "./utils"
 import {
-    PLACE_MEEPLE,
-    PLACE_TILE,
     ROAD,
     CITY,
-    FIELD
+    FIELD,
+    FINAL_SCORE_CALCULATION,
+    FINISHED,
 } from "./constants";
 
 export default function GameLoop() {
@@ -29,6 +29,7 @@ export default function GameLoop() {
     const lastTile = useRecoilValue(lastPlacedTile);
     const [gridTiles, setTilesInGrid] = useRecoilState(tilesInGrid);
     const [updatesAfterCollisions, setUpdatesAfterCollisions] = useRecoilState(updatesAfterResolvingCollisions);
+    const [gameStatus, setGameStatus] = useRecoilState(gameState);
     const [roads, setRoads] = useRecoilState(roadsList);
     const [fields, setFields] = useRecoilState(fieldsList);
     const [cities, setCities] = useRecoilState(citiesList);
@@ -51,9 +52,9 @@ export default function GameLoop() {
         resolveCollisionsInTheListOfMapObjects(collisions.fields, setFields);
         resolveCollisionsInTheGridTiles(collisions);
         setUpdatesAfterCollisions({
-            ...collisions.roads, 
-            ...collisions.cities, 
-            ...collisions.fields, 
+            ...collisions.roads,
+            ...collisions.cities,
+            ...collisions.fields,
             ...updatesAfterCollisions
         });
     }
@@ -70,11 +71,11 @@ export default function GameLoop() {
                 // remove them from the list of objects
                 objectsToReturn = objects.filter(obj => (obj.id != oldId) && (obj.id != newObjects[oldId]));
                 // add the new object with the updated coordinates and players
-                const tempObj = 
-                { 
+                const tempObj =
+                {
                     ...newMapObj,
                     tileCoords: [...newMapObj.tileCoords, ...oldMapObj.tileCoords],
-                    players: {...newMapObj.players},
+                    players: { ...newMapObj.players },
                 }
                 Object.keys(oldMapObj.players).forEach(playerId => {
                     if (tempObj.players[playerId]) {
@@ -169,7 +170,7 @@ export default function GameLoop() {
                     Object.keys(road.players).forEach(id => {
                         const player = players.find(p => p.id === id);
                         player.meeples += road.players[id];
-                        if (winnerIds.includes(id)) player.score += road.tileCoords.length;    
+                        if (winnerIds.includes(id)) player.score += road.tileCoords.length;
                     })
                 }
             })
@@ -179,10 +180,41 @@ export default function GameLoop() {
                     Object.keys(city.players).forEach(id => {
                         const player = players.find(p => p.id === id);
                         player.meeples += city.players[id];
-                        if (winnerIds.includes(id)) player.score += city.tileCoords.length * 2;    
+                        if (winnerIds.includes(id)) player.score += city.tileCoords.length * 2;
                     })
                 }
             })
+        }))
+    }
+
+    useEffect(() => {
+        if (gameStatus === FINAL_SCORE_CALCULATION) {
+            calculateFinalScore();
+            setGameStatus(FINISHED);
+        }
+    }, [gameStatus])
+
+    const calculateFinalScore = function () {
+        setPlayers(produce(players => {
+            roads.forEach(road => {
+                if (!road.finished && Object.keys(road.players).length != 0) {
+                    const winnerIds = determinePlayersToGetScores(road.players);
+                    Object.keys(road.players).forEach(id => {
+                        const player = players.find(p => p.id === id);
+                        if (winnerIds.includes(id)) player.score += road.tileCoords.length;
+                    })
+                }
+            });
+            cities.forEach(city => {
+                if (!city.finished && Object.keys(city.players).length != 0) {
+                    const winnerIds = determinePlayersToGetScores(city.players);
+                    Object.keys(city.players).forEach(id => {
+                        const player = players.find(p => p.id === id);
+                        if (winnerIds.includes(id)) player.score += city.tileCoords.length;
+                    })
+                }
+            });
+            // add score for fields
         }))
     }
 

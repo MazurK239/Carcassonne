@@ -4,7 +4,7 @@ import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import Tile from "../../tiles/Tile";
 import { nextTile, tileIndex } from "../../recoil/tiles";
 import "./NextTile.css"
-import { FINISHED, TILE_SIDE_PX } from "../../constants"
+import { FINAL_SCORE_CALCULATION, PLACE_TILE, TILE_SIDE_PX } from "../../constants"
 import { RotateLeft, RotateRight } from "@mui/icons-material";
 import { gameState } from "../../recoil/game";
 
@@ -13,7 +13,7 @@ export default function NextTile() {
     const [tile, setNextTile] = useRecoilState(nextTile);
     const tileIdx = useRecoilValue(tileIndex);
     const tileRef = useRef(null);
-    const setGameState = useSetRecoilState(gameState);
+    const [gameStatus, setGameState] = useRecoilState(gameState);
 
     const rotateClockwise = function () {
         const rotatedTile = Tile.rotateClockwise(tile);
@@ -32,7 +32,7 @@ export default function NextTile() {
     }, [tileIdx])
 
     useEffect(() => {
-        if (!tile) setGameState(FINISHED);
+        if (!tile && gameStatus === PLACE_TILE) setGameState(FINAL_SCORE_CALCULATION);
     }, [tile])
 
     return (
