@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { ROAD, CITY, FIELD } from "../../constants";
+import { ROAD, CITY, FIELD } from "./constants";
 
 export function getTileWithIds(tile, coords, gridTiles) {
     const newTile = {

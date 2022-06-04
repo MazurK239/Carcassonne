@@ -17,6 +17,11 @@ export const tilesList = atom({
     default: drawTiles(),
 });
 
+export const lastPlacedTile = atom({
+    key: "lastPlacedTile",
+    default: null,
+})
+
 export const tileIndex = selector({
     key: "tileIndex",
     get: ({ get }) => get(indexInArray),

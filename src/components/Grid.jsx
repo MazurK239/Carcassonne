@@ -1,8 +1,6 @@
 import React from "react";
-import { useWindowSize } from "@react-hook/window-size";
 
 import Row from "./Row/Row"
-import TilePlace from "./TilePlace/TilePlace";
 
 export default function Grid({
     rows: rowsCount,
