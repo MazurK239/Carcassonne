@@ -1,8 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import produce from "immer";
 import { useRecoilValue, useRecoilState } from "recoil";
-import { FINISHED } from "../../constants";
-import { gameState } from "../../recoil/game";
 import { gridParams, tilesInGrid } from "../../recoil/grid";
 import Grid from "../Grid";
 
@@ -12,7 +10,6 @@ export default function Board() {
 
     const [grid, setGridParams] = useRecoilState(gridParams);
     const boardRef = useRef(null);
-    const gameStatus = useRecoilValue(gameState);
     const gridTiles = useRecoilValue(tilesInGrid);
 
     useEffect(() => {
@@ -61,10 +58,6 @@ export default function Board() {
             })
         )
     }, [gridTiles])
-
-    useEffect(() => {
-        // if (gameStatus === FINISHED) alert("The game is finished!")
-    }, [gameStatus])
 
     return (
         <div className="board" ref={boardRef}>

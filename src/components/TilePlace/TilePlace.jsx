@@ -6,7 +6,8 @@ import {
     PLACE_TILE,
     ROAD,
     CITY,
-    FIELD
+    FIELD,
+    NEW_GAME
 } from "../../constants";
 import { gameState } from "../../recoil/game";
 import { tilesInGrid } from "../../recoil/grid";
@@ -105,6 +106,14 @@ export default function TilePlace({
     useEffect(() => {
         if (gameStatus === PLACE_TILE) {
             setReadyForMeeple(false);
+        }
+    }, [gameStatus])
+
+    // reset the tiles when the new game is ready to begin
+    useEffect(() => {
+        if (gameStatus === NEW_GAME) {
+            setTileInPlace(null);
+            setMeeple(null);
         }
     }, [gameStatus])
 

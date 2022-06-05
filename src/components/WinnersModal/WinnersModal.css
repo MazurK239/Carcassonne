@@ -1,0 +1,6 @@
+.winner-info {
+    display: flex;
+    justify-content: space-between;
+    min-width: 100px;
+    margin: 5px 15px;
+}

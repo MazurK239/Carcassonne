@@ -28,6 +28,7 @@ export const tileIndex = selector({
     set: ({ set, get }, newValue) => {
         set(indexInArray, newValue);
         if (newValue instanceof DefaultValue) {
+            set(indexInArray, -1);
             set(nextTile, Tile.initialTile());
         } else {
             const list = get(tilesList);
