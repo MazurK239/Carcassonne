@@ -15,6 +15,11 @@ export const fieldsList = atom({
     default: [],
 })
 
+export const churchesList = atom({
+    key: "churchesList",
+    default: [],
+})
+
 export const updatesAfterResolvingCollisions = atom({
     key: "updatesAfterResolvingCollisions",
     default: {},

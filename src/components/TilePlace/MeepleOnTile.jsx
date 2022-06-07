@@ -24,6 +24,10 @@ export default function MeepleOnTile({
         case 'right':
             top = zoneSize; left = 2 * zoneSize;
             break;
+        case 'center':
+            top = zoneSize; left = zoneSize;
+            break;
+
     }
 
     return (

@@ -6,12 +6,13 @@ import { ADD_PLAYERS, PLACE_TILE, NEW_GAME, FINISHED } from "../../constants"
 import { Dialog } from "@mui/material";
 import { gameState } from "../../recoil/game";
 import { activePlayer, playersList } from "../../recoil/players";
-import { citiesList, fieldsList, roadsList, updatesAfterResolvingCollisions } from "../../recoil/mapObjects";
+import { churchesList, citiesList, fieldsList, roadsList, updatesAfterResolvingCollisions } from "../../recoil/mapObjects";
 import { Button, DialogTitle } from "@mui/material";
 import { gridParams, tilesInGrid } from "../../recoil/grid";
 import { lastPlacedTile, tileIndex, tilesList } from "../../recoil/tiles";
 
 import "./WinnersModal.css"
+import drawTiles from "../../tiles/tilesList";
 
 export default function WinnersModal() {
 
@@ -22,10 +23,11 @@ export default function WinnersModal() {
     const resetRoads = useResetRecoilState(roadsList);
     const resetFields = useResetRecoilState(fieldsList);
     const resetCities = useResetRecoilState(citiesList);
+    const resetChurches = useResetRecoilState(churchesList);
     const resetGrid = useResetRecoilState(gridParams);
     const resetUpdatesAfterResolvingCollisions = useResetRecoilState(updatesAfterResolvingCollisions);
     const resetGridTiles = useResetRecoilState(tilesInGrid);
-    const resetTiles = useResetRecoilState(tilesList);
+    const resetTiles = useSetRecoilState(tilesList);
     const resetTileIndex = useResetRecoilState(tileIndex);
     const resetLastPlacedTile = useResetRecoilState(lastPlacedTile);
 
@@ -34,12 +36,13 @@ export default function WinnersModal() {
         resetPlayers();
         resetActivePlayer();
         resetCities();
+        resetChurches();
         resetFields();
         resetRoads();
         resetUpdatesAfterResolvingCollisions();
         resetGrid();
         resetGridTiles();
-        resetTiles();
+        resetTiles(drawTiles());
         resetTileIndex();
         resetLastPlacedTile();
     }

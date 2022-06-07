@@ -7,6 +7,7 @@ import {
     ROAD,
     CITY,
     FIELD,
+    CHURCH,
     NEW_GAME
 } from "../../constants";
 import { gameState } from "../../recoil/game";
@@ -20,7 +21,7 @@ import {
 } from "../../utils"
 
 import "./TilePlace.css"
-import { citiesList, fieldsList, roadsList, updatesAfterResolvingCollisions } from "../../recoil/mapObjects";
+import { churchesList, citiesList, fieldsList, roadsList, updatesAfterResolvingCollisions } from "../../recoil/mapObjects";
 
 export default function TilePlace({
     coords,
@@ -38,6 +39,7 @@ export default function TilePlace({
     const [roads, setRoads] = useRecoilState(roadsList);
     const [fields, setFields] = useRecoilState(fieldsList);
     const [cities, setCities] = useRecoilState(citiesList);
+    const [churches, setChurches] = useRecoilState(churchesList);
 
     const [tileInPlace, setTileInPlace] = useState(null);
     const [valid, setValid] = useState(false);
@@ -120,7 +122,7 @@ export default function TilePlace({
     // delete meeple from tile if it is on the finished object
     useEffect(() => {
         if (meeple) {
-            [roads, cities].forEach(objList =>
+            [roads, cities, churches].forEach(objList =>
                 objList.forEach(obj => {
                     if (obj.finished &&
                         obj.tileCoords.some(c => c[0] === coords[0] && c[1] === coords[1]) &&
@@ -131,7 +133,7 @@ export default function TilePlace({
                 })
             )
         }
-    }, [roads, cities, fields]);
+    }, [roads, cities, fields, churches]);
 
     const handleZoneClick = function (side) {
         setMeeple({ color: player.color, position: side, objectId: tileInPlace[side].id });
@@ -165,6 +167,15 @@ export default function TilePlace({
         } else if (tileInPlace[side].type === FIELD) {
             setFields(produce((fields) => {
                 fields.find(f => f.id == tileInPlace[side].id).players[player.id] = 1;
+            }))
+        } else if (tileInPlace[side].type === CHURCH) {
+            setChurches(produce((churches) => {
+                const church = churches.find(c => c.id == tileInPlace[side].id);
+                church.players[player.id] = 1;
+                if (church.finished) {
+                    returnMeeple = true;
+                    scoreToAdd = 9;
+                }
             }))
         }
         // place meeple or increase score
@@ -213,6 +224,7 @@ export default function TilePlace({
                         left: canPlaceMeeple(tileInPlace.left),
                         bottom: canPlaceMeeple(tileInPlace.bottom),
                         right: canPlaceMeeple(tileInPlace.right),
+                        center: tileInPlace.hasChurch,
                     }}
                 />
             }

@@ -34,6 +34,7 @@ export default function PlaceMeepleZone({
             {showSide.left && getZone(zoneSize, 0, 'left')}
             {showSide.bottom && getZone(2 * zoneSize, zoneSize, 'bottom')}
             {showSide.right && getZone(zoneSize, 2 * zoneSize, 'right')}
+            {showSide.center && getZone(zoneSize, zoneSize, 'center')}
         </div>
     )
 }

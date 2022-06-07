@@ -5,7 +5,7 @@ import { lastPlacedTile } from "./recoil/tiles";
 import { playersList } from "./recoil/players";
 import { tilesInGrid } from "./recoil/grid";
 import { gameState } from "./recoil/game";
-import { citiesList, fieldsList, roadsList, updatesAfterResolvingCollisions } from "./recoil/mapObjects";
+import { churchesList, citiesList, fieldsList, roadsList, updatesAfterResolvingCollisions } from "./recoil/mapObjects";
 import {
     collectNewObjectsFromTile,
     collectCollisionsFromTile,
@@ -13,11 +13,13 @@ import {
     getMapObjBySide,
     isFinished,
     determinePlayersToGetScores,
+    isChurchFinished,
 } from "./utils"
 import {
     ROAD,
     CITY,
     FIELD,
+    CHURCH,
     FINAL_SCORE_CALCULATION,
     FINISHED,
 } from "./constants";
@@ -33,6 +35,7 @@ export default function GameLoop() {
     const [roads, setRoads] = useRecoilState(roadsList);
     const [fields, setFields] = useRecoilState(fieldsList);
     const [cities, setCities] = useRecoilState(citiesList);
+    const [churches, setChurches] = useRecoilState(churchesList);
     const [players, setPlayers] = useRecoilState(playersList);
 
     useEffect(() => {
@@ -103,6 +106,7 @@ export default function GameLoop() {
         updateObjects(objects.newRoads, setRoads, ROAD, tile.coords);
         updateObjects(objects.newCities, setCities, CITY, tile.coords);
         updateObjects(objects.newFields, setFields, FIELD, tile.coords);
+        updateObjects(objects.newChurches, setChurches, CHURCH, tile.coords);
     }
 
     const updateObjects = function (newObjects, setter, type, coords) {
@@ -127,12 +131,13 @@ export default function GameLoop() {
             console.log('roads', roads);
             console.log('cities', cities);
             console.log('fields', fields);
+            console.log('churches', churches);
         }
     }, [objectsAdded])
 
     const handleAssetsFinish = function (tile) {
         // find the finished assets
-        const finishedMapObjects = { roads: [], cities: [], fields: [] };
+        const finishedMapObjects = { roads: [], cities: [], fields: [], churches: [] };
         Object.values(tile.getSides()).forEach(side => {
             const mapObj = getMapObjBySide(side, roads, cities, fields);
             if (isFinished(mapObj, gridTiles)) {
@@ -145,7 +150,6 @@ export default function GameLoop() {
                 }
             }
         })
-        // find the finished churches
         // set the finished: true
         setRoads(produce(roads => {
             finishedMapObjects.roads.forEach(road => {
@@ -161,6 +165,15 @@ export default function GameLoop() {
             finishedMapObjects.fields.forEach(field => {
                 fields.find(f => f.id === field.id).finished = true;
             });
+        }))
+        // find the just finished churches
+        setChurches(produce(churchesList => {
+            churchesList.forEach(church => {
+                if (isChurchFinished(church, gridTiles) && !church.finished) {
+                    finishedMapObjects.churches.push(churches.find(ch => ch.id === church.id));
+                    church.finished = true;
+                }
+            })
         }))
         // return meeples and add score
         setPlayers(produce(players => {
@@ -181,6 +194,15 @@ export default function GameLoop() {
                         const player = players.find(p => p.id === id);
                         player.meeples += city.players[id];
                         if (winnerIds.includes(id)) player.score += city.tileCoords.length * 2;
+                    })
+                }
+            })
+            finishedMapObjects.churches.forEach(church => {
+                if (Object.keys(church.players).length != 0) {
+                    Object.keys(church.players).forEach(id => {
+                        const player = players.find(p => p.id === id);
+                        player.meeples += church.players[id];
+                        player.score += 9;
                     })
                 }
             })
@@ -214,8 +236,47 @@ export default function GameLoop() {
                     })
                 }
             });
+            churches.forEach(church => {
+                if (!church.finished && Object.keys(church.players).length != 0) {
+                    const winnerIds = determinePlayersToGetScores(church.players);
+                    Object.keys(church.players).forEach(id => {
+                        const player = players.find(p => p.id === id);
+                        if (winnerIds.includes(id)) player.score += getScoreForChurch(church);
+                    })
+                }
+            });
             // add score for fields
         }))
+    }
+
+    const getScoreForChurch = function(church) {
+        const coords = church.tileCoords[0];
+        let score = 1;
+        if (gridTiles[`${coords[0] - 1}_${coords[1] - 1}`]) {
+            score++;
+        }
+        if (gridTiles[`${coords[0] - 1}_${coords[1]}`]) {
+            score++;
+        }
+        if (gridTiles[`${coords[0] - 1}_${coords[1] + 1}`]) {
+            score++;
+        }
+        if (gridTiles[`${coords[0]}_${coords[1] - 1}`]) {
+            score++;
+        }
+        if (gridTiles[`${coords[0]}_${coords[1] + 1}`]) {
+            score++;
+        }
+        if (gridTiles[`${coords[0] + 1}_${coords[1] - 1}`]) {
+            score++;
+        }
+        if (gridTiles[`${coords[0] + 1}_${coords[1]}`]) {
+            score++;
+        }
+        if (gridTiles[`${coords[0] + 1}_${coords[1] + 1}`]) {
+            score++;
+        }
+        return score;
     }
 
     return null;

@@ -1,13 +1,13 @@
 import { v4 as uuidv4 } from 'uuid';
-import { ROAD, CITY, FIELD } from "./constants";
+import { ROAD, CITY, FIELD, CHURCH } from "./constants";
 
 export function getTileWithIds(tile, coords, gridTiles) {
     const newTile = {
-        ...tile, 
-        top: {...tile.top}, 
-        bottom: {...tile.bottom}, 
-        left: {...tile.left}, 
-        right: {...tile.right},
+        ...tile,
+        top: { ...tile.top },
+        bottom: { ...tile.bottom },
+        left: { ...tile.left },
+        right: { ...tile.right },
     };
     newTile.getSides = function () {
         return { top: this.top, bottom: this.bottom, right: this.right, left: this.left }
@@ -27,11 +27,17 @@ export function getTileWithIds(tile, coords, gridTiles) {
     if (bottomTile) idsMap.set(tile.bottom.id, bottomTile.top.id);
     const rightTile = gridTiles[`${coords[0]}_${coords[1] + 1}`];
     if (rightTile) idsMap.set(tile.right.id, rightTile.left.id);
-
+    
     newTile.top.id = idsMap.get(tile.top.id);
     newTile.left.id = idsMap.get(tile.left.id);
     newTile.bottom.id = idsMap.get(tile.bottom.id);
     newTile.right.id = idsMap.get(tile.right.id);
+    if (tile.center) {
+        newTile.center = { type: tile.center.type, id: uuidv4() };
+        // newTile.getSides = function () {
+        //     return { top: this.top, bottom: this.bottom, right: this.right, left: this.left, center: this.center }
+        // };  
+    }
 
     return newTile;
 }
@@ -42,10 +48,14 @@ export function collectNewObjectsFromTile(tile) {
     tileObjMap.set(tile.left.id, tile.left.type);
     tileObjMap.set(tile.bottom.id, tile.bottom.type);
     tileObjMap.set(tile.right.id, tile.right.type);
+    if (tile.center) {
+        tileObjMap.set(tile.center.id, tile.center.type);
+    }
     const obj = {
         newRoads: [],
         newCities: [],
-        newFields: []
+        newFields: [],
+        newChurches: [],
     };
 
     tileObjMap.forEach((objType, id) => {
@@ -58,13 +68,16 @@ export function collectNewObjectsFromTile(tile) {
                 break;
             case FIELD:
                 obj.newFields.push(id);
+                break;
+            case CHURCH:
+                obj.newChurches.push(id);
         }
     })
     return obj
 }
 
 export function collectCollisionsFromTile(tile, coords, gridTiles) {
-    const obj = {roads: {}, cities: {}, fields: {}};
+    const obj = { roads: {}, cities: {}, fields: {} };
     const topTile = gridTiles[`${coords[0] - 1}_${coords[1]}`];
     if (topTile && tile.top.id != topTile.bottom.id) {
         if (tile.top.type === ROAD) {
@@ -115,7 +128,7 @@ export function getTilesWithResolvedCollisions(collisionsObj, tiles) {
     Object.keys(collisionsObj).forEach(oldId => {
         Object.values(tiles).forEach(tile => {
             Object.keys(tile).forEach(key => {
-                if (tile[key].id === oldId) {
+                if (tile[key]?.id === oldId) {
                     tile[key].id = collisionsObj[oldId];
                 }
             })
@@ -135,7 +148,7 @@ export function getMapObjBySide(side, roads, cities, fields) {
 
 export function isFinished(mapObj, tilesInGrid) {
     let finished = true;
-    for(let tileCoords of mapObj.tileCoords) {
+    for (let tileCoords of mapObj.tileCoords) {
         const tile = tilesInGrid[`${tileCoords[0]}_${tileCoords[1]}`];
         if (
             tile.top.id === mapObj.id && !mapObj.tileCoords.some(c => c[0] === tileCoords[0] - 1 && c[1] === tileCoords[1]) ||
@@ -148,6 +161,20 @@ export function isFinished(mapObj, tilesInGrid) {
         }
     }
     return finished;
+}
+
+export function isChurchFinished(church, gridTiles) {
+    const coords = church.tileCoords[0];
+    return (
+        gridTiles[`${coords[0] - 1}_${coords[1] - 1}`] &&
+        gridTiles[`${coords[0] - 1}_${coords[1]}`] &&
+        gridTiles[`${coords[0] - 1}_${coords[1] + 1}`] &&
+        gridTiles[`${coords[0]}_${coords[1] - 1}`] &&
+        gridTiles[`${coords[0]}_${coords[1] + 1}`] &&
+        gridTiles[`${coords[0] + 1}_${coords[1] - 1}`] &&
+        gridTiles[`${coords[0] + 1}_${coords[1]}`] &&
+        gridTiles[`${coords[0] + 1}_${coords[1] + 1}`]
+    )
 }
 
 export function determinePlayersToGetScores(playersObj) {
