@@ -1,6 +1,6 @@
 .controls-panel {
     margin: 10px 50px;
-    height: 120px;
+    height: 140px;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -28,4 +28,24 @@
 
 .new-game-btn:hover {
     opacity: 1;
+}
+
+.next-player-btn-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    height: 120px;
+}
+
+.tile-controls-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    width: 200px;
+}
+
+.tiles-left-section {
+    margin-top: 10px;
 }

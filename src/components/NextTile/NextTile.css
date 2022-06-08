@@ -1,16 +1,11 @@
-.new-tile-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.tileSection {
+.tile-section {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    height: 120px;
 }
 
-.nextTile {
+.next-tile {
     transition: all 0.3s ease;
     margin: 10px
 }

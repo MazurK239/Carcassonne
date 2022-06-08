@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 
 import Tile from "../../tiles/Tile";
-import { nextTile, tileIndex } from "../../recoil/tiles";
+import { nextTile, tileIndex, tilesList } from "../../recoil/tiles";
 import "./NextTile.css"
 import { FINAL_SCORE_CALCULATION, PLACE_TILE, TILE_SIDE_PX } from "../../constants"
 import { RotateLeft, RotateRight } from "@mui/icons-material";
@@ -12,6 +12,7 @@ export default function NextTile() {
 
     const [tile, setNextTile] = useRecoilState(nextTile);
     const tileIdx = useRecoilValue(tileIndex);
+    const tiles = useRecoilValue(tilesList);
     const tileRef = useRef(null);
     const [gameStatus, setGameState] = useRecoilState(gameState);
 
@@ -36,18 +37,21 @@ export default function NextTile() {
     }, [tile])
 
     return (
-        <div className="new-tile-container">
-            <div className="tileSection">
+        // <div className="new-tile-container">
+        //     <div className="tiles-left-section">
+        //         Tiles left: {tiles.length - tileIdx - 1}
+        //     </div>
+            <div className="tile-section">
                 <button onClick={rotateCounterClockwise}>
                     <RotateLeft />
                 </button>
-                <div className="nextTile" ref={tileRef} style={{ width: TILE_SIDE_PX, height: TILE_SIDE_PX }}>
+                <div className="next-tile" ref={tileRef} style={{ width: TILE_SIDE_PX, height: TILE_SIDE_PX }}>
                     {tile ? <img src={tile.image.src} /> : "No more tiles"}
                 </div>
                 <button onClick={rotateClockwise}>
                     <RotateRight />
                 </button>
             </div>
-        </div>
+        // </div>
     );
 }

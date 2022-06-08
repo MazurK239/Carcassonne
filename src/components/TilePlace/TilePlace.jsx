@@ -50,7 +50,6 @@ export default function TilePlace({
         if (tile && valid && !tileInPlace) {
             const tileToPlace = getTileWithIds(tile, coords, gridTiles);
             setTileInPlace(tileToPlace);
-            setTileIdx(tileIdx + 1);
             setTilesInGrid(
                 produce((tiles) => {
                     tiles[`${coords[0]}_${coords[1]}`] = tileToPlace;
@@ -140,6 +139,7 @@ export default function TilePlace({
         addPlayerToMapObject(side);
         setActivePlayer(players[(player.indexInArray + 1) % players.length]);
         setGameStatus(PLACE_TILE);
+        setTileIdx(tileIdx + 1);
     }
 
     const addPlayerToMapObject = function (side) {
