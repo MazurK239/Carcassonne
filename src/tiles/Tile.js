@@ -13,17 +13,17 @@ export default class Tile {
     hasChurch;
 
     constructor(
-        top, idTop,
-        right, idRight,
-        bottom, idBottom,
-        left, idLeft,
+        top,
+        right,
+        bottom,
+        left,
         imageSrc,
         hasChurch = false,
     ) {
-        this.top = { type: top, id: idTop };
-        this.bottom = { type: bottom, id: idBottom };
-        this.left = { type: left, id: idLeft };
-        this.right = { type: right, id: idRight };
+        this.top = top;
+        this.bottom = bottom;
+        this.left = left;
+        this.right = right;
         const image = new Image();
         image.src = imageSrc;
         this.image = image;
@@ -33,14 +33,11 @@ export default class Tile {
     }
 
     getSides() {
-        // return this.center ?
-        //     { top: this.top, bottom: this.bottom, right: this.right, left: this.left, center: this.center } :
-            // { top: this.top, bottom: this.bottom, right: this.right, left: this.left };
         return { top: this.top, bottom: this.bottom, right: this.right, left: this.left };
     }
 
     static initialTile() {
-        return new Tile(CITY, 1, ROAD, 2, FIELD, 3, ROAD, 2, InitialTilePath);
+        return new Tile({type: CITY, id: 1}, {type: ROAD, id: 2}, {type: FIELD, id: 3}, {type: ROAD, id: 2}, InitialTilePath);
     }
 
     static rotateClockwise(tile) {
