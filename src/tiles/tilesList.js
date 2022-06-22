@@ -4,7 +4,13 @@ import cityOneEdge from "../images/city_one_edge.jpeg"
 import cityRoadTurnLeft from "../images/city_road_turn_left.jpeg"
 import cityRoadTurnRight from "../images/city_road_turn_right.jpeg"
 import cityTwoEdges from "../images/city_two_edges.jpeg"
+import cityTwoEdgesAdj from "../images/city_two_edges_adj.jpeg"
 import cityCorner from "../images/city_corner.jpeg"
+import cityCornerRoad from "../images/city_corner_road.jpeg"
+import cityPipe from "../images/city_pipe.jpeg"
+import cityRoadThree from "../images/city_road_three.jpeg"
+import cityThree from "../images/city_three.jpeg"
+import cityThreeRoad from "../images/city_three_road.jpeg"
 import roadFour from "../images/road_four.jpeg"
 import roadThree from "../images/road_three.jpeg"
 import roadStraight from "../images/road_straight.jpeg"
@@ -63,6 +69,13 @@ const tiles = [
         { type: FIELD, id: 2 },                             // | /       \ |
         cityTwoEdges                                        // |/_________\|
     ),
+    // new Tile(
+    //     { type: CITY, id: 1, surroundingFields: [2] },
+    //     { type: FIELD, id: 2 },
+    //     { type: CITY, id: 3, surroundingFields: [2] },
+    //     { type: FIELD, id: 2 },
+    //     cityTwoEdges
+    // ),
     new Tile(                                               //  ___________
         { type: ROAD, id: 1, fieldLeft: 6, fieldRight: 5 }, // |     |     |
         { type: ROAD, id: 2, fieldLeft: 7, fieldRight: 6 }, // |     |     | 
@@ -153,6 +166,90 @@ const tiles = [
     //     { type: FIELD, id: 1 }, 
     //     { type: FIELD, id: 1 }, 
     //     church, true
+    // ),
+    new Tile(                                               //  ___________
+        { type: CITY, id: 1, surroundingFields: [4] },      // |         _/|
+        { type: ROAD, id: 2, fieldLeft: 3, fieldRight: 4 }, // | CITY  _/  |
+        { type: ROAD, id: 2, fieldLeft: 4, fieldRight: 3 }, // |     _/   _|    
+        { type: CITY, id: 1, surroundingFields: [2] },      // |  __/  __/ |
+        cityCornerRoad                                      // |_/____/____|
+    ),
+    // new Tile(
+    //     { type: CITY, id: 1, surroundingFields: [4] },
+    //     { type: ROAD, id: 2, fieldLeft: 3, fieldRight: 4 },
+    //     { type: ROAD, id: 2, fieldLeft: 4, fieldRight: 3 },
+    //     { type: CITY, id: 1, surroundingFields: [2] },
+    //     cityCornerRoad
+    // ),
+    new Tile(                                             //  ___________
+        { type: FIELD, id: 1 },                           // |\_________/|
+        { type: CITY, id: 2, surroundingFields: [1, 3] }, // |           | 
+        { type: FIELD, id: 3 },                           // |   CITY    |    
+        { type: CITY, id: 2, surroundingFields: [1, 3] }, // | _________ |
+        cityPipe                                          // |/_________\|
+    ),
+    // new Tile(
+    //     { type: FIELD, id: 1 },
+    //     { type: CITY, id: 2, surroundingFields: [1, 3] },
+    //     { type: FIELD, id: 3 },
+    //     { type: CITY, id: 2, surroundingFields: [1, 3] },
+    //     cityPipe
+    // ),
+    new Tile(                                                  //  ___________
+        { type: CITY, id: 1, surroundingFields: [5] },         // |\         /|
+        { type: ROAD, id: 2, fieldLeft: 6, fieldRight: 5 },    // | \_______/ | 
+        { type: ROAD, id: 3, fieldLeft: 7, fieldRight: 6 },    // |_____ _____|    
+        { type: ROAD, id: 4, fieldLeft: 5, fieldRight: 7 },    // |     |     |
+        cityRoadThree                                          // |_____|_____|
+    ),
+    // new Tile(                                                  
+    //     { type: CITY, id: 1, surroundingFields: [5] },
+    //     { type: ROAD, id: 2, fieldLeft: 6, fieldRight: 5 },
+    //     { type: ROAD, id: 3, fieldLeft: 7, fieldRight: 6 },
+    //     { type: ROAD, id: 4, fieldLeft: 5, fieldRight: 7 },
+    //     cityRoadThree                                       
+    // ),
+    new Tile(                                          //  ___________
+        { type: CITY, id: 1, surroundingFields: [2] }, // |           |
+        { type: CITY, id: 1, surroundingFields: [2] }, // |   CITY    | 
+        { type: FIELD, id: 2 },                        // |   _____   |    
+        { type: CITY, id: 1, surroundingFields: [2] }, // | / field \ |
+        cityThree                                      // |/_________\|
+    ),
+    // new Tile(
+    //     { type: CITY, id: 1, surroundingFields: [2] },
+    //     { type: CITY, id: 1, surroundingFields: [2] },
+    //     { type: FIELD, id: 2 },
+    //     { type: CITY, id: 1, surroundingFields: [2] },
+    //     cityThree
+    // ),
+    new Tile(                                               //  ___________
+        { type: CITY, id: 1, surroundingFields: [3, 4] },   // |           |
+        { type: CITY, id: 1, surroundingFields: [3, 4] },   // |   CITY    | 
+        { type: ROAD, id: 2, fieldLeft: 3, fieldRight: 4 }, // |   _____   |    
+        { type: CITY, id: 1, surroundingFields: [3, 4] },   // | /   |   \ |
+        cityThreeRoad                                       // |/____|____\|
+    ),
+    // new Tile(
+    //     { type: CITY, id: 1, surroundingFields: [3, 4] },
+    //     { type: CITY, id: 1, surroundingFields: [3, 4] },
+    //     { type: ROAD, id: 2, fieldLeft: 3, fieldRight: 4 },
+    //     { type: CITY, id: 1, surroundingFields: [3, 4] },
+    //     cityThreeRoad
+    // ),
+    new Tile(                                               //  ___________
+        { type: CITY, id: 1, surroundingFields: [2] },      // |\_________/|
+        { type: FIELD, id: 2 },                             // | |         | 
+        { type: FIELD, id: 2 },                             // | |         |
+        { type: CITY, id: 3, surroundingFields: [2] },      // | |         |    
+        cityTwoEdgesAdj                                     // |/__________|
+    ),
+    // new Tile(
+    //     { type: CITY, id: 1, surroundingFields: [2] },
+    //     { type: FIELD, id: 2 },
+    //     { type: FIELD, id: 2 },
+    //     { type: CITY, id: 3, surroundingFields: [2] },
+    //     cityTwoEdgesAdj
     // ),
 ]
 
