@@ -11,6 +11,7 @@ export default class Tile {
     image;
     rotationAngle;
     hasChurch;
+    hasShield;
 
     constructor(
         top,
@@ -19,6 +20,7 @@ export default class Tile {
         left,
         imageSrc,
         hasChurch = false,
+        hasShield = false,
     ) {
         this.top = top;
         this.bottom = bottom;
@@ -30,6 +32,7 @@ export default class Tile {
         this.rotationAngle = 0;
         this.center = hasChurch ? { type: CHURCH, id: 100 } : null
         this.hasChurch = hasChurch;
+        this.hasShield = hasShield;
     }
 
     getSides() {

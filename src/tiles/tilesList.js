@@ -7,10 +7,16 @@ import cityTwoEdges from "../images/city_two_edges.jpeg"
 import cityTwoEdgesAdj from "../images/city_two_edges_adj.jpeg"
 import cityCorner from "../images/city_corner.jpeg"
 import cityCornerRoad from "../images/city_corner_road.jpeg"
+import cityCornerShield from "../images/city_corner_shield.jpeg"
+import cityCornerRoadShield from "../images/city_corner_road_shield.jpeg"
 import cityPipe from "../images/city_pipe.jpeg"
+import cityPipeShield from "../images/city_pipe_shield.jpeg"
 import cityRoadThree from "../images/city_road_three.jpeg"
 import cityThree from "../images/city_three.jpeg"
+import cityThreeShield from "../images/city_three_shield.jpeg"
+import cityFourShield from "../images/city_four_shield.jpeg"
 import cityThreeRoad from "../images/city_three_road.jpeg"
+import cityThreeRoadShield from "../images/city_three_road_shield.jpeg"
 import roadFour from "../images/road_four.jpeg"
 import roadThree from "../images/road_three.jpeg"
 import roadStraight from "../images/road_straight.jpeg"
@@ -34,6 +40,27 @@ const tiles = [
     //     { type: FIELD, id: 2 },   
     //     cityOneEdge               
     // ),
+    // new Tile(                     
+    //     { type: CITY, id: 1, surroundingFields: [2] },    
+    //     { type: FIELD, id: 2 },   
+    //     { type: FIELD, id: 2 },   
+    //     { type: FIELD, id: 2 },   
+    //     cityOneEdge               
+    // ),
+    // new Tile(                     
+    //     { type: CITY, id: 1, surroundingFields: [2] },    
+    //     { type: FIELD, id: 2 },   
+    //     { type: FIELD, id: 2 },   
+    //     { type: FIELD, id: 2 },   
+    //     cityOneEdge               
+    // ),
+    // new Tile(                     
+    //     { type: CITY, id: 1, surroundingFields: [2] },    
+    //     { type: FIELD, id: 2 },   
+    //     { type: FIELD, id: 2 },   
+    //     { type: FIELD, id: 2 },   
+    //     cityOneEdge               
+    // ),
     new Tile(                                                  //  ___________
         { type: CITY, id: 1, surroundingFields: [2] },         // |\         /|
         { type: FIELD, id: 2 },                                // | \_______/ | 
@@ -41,6 +68,13 @@ const tiles = [
         { type: ROAD, id: 3, fieldLeft: 2, fieldRight: 4 },    // |     |     |
         cityRoadTurnLeft                                       // |_____|_____|
     ),
+    // new Tile(                                                  
+    //     { type: CITY, id: 1, surroundingFields: [2] },                                 
+    //     { type: FIELD, id: 2 },                                
+    //     { type: ROAD, id: 3, fieldLeft: 4, fieldRight: 2 },    
+    //     { type: ROAD, id: 3, fieldLeft: 2, fieldRight: 4 },    
+    //     cityRoadTurnLeft                                       
+    // ),
     // new Tile(                                                  
     //     { type: CITY, id: 1, surroundingFields: [2] },                                 
     //     { type: FIELD, id: 2 },                                
@@ -62,6 +96,13 @@ const tiles = [
     //     { type: FIELD, id: 3 },
     //     cityRoadTurnRight
     // ),
+    // new Tile(
+    //     { type: CITY, id: 1, surroundingFields: [3] },
+    //     { type: ROAD, id: 2, fieldLeft: 4, fieldRight: 3 },
+    //     { type: ROAD, id: 2, fieldLeft: 3, fieldRight: 4 },
+    //     { type: FIELD, id: 3 },
+    //     cityRoadTurnRight
+    // ),
     new Tile(                                               //  ___________
         { type: CITY, id: 1, surroundingFields: [2] },      // |\         /|
         { type: FIELD, id: 2 },                             // | \_______/ | 
@@ -69,6 +110,13 @@ const tiles = [
         { type: FIELD, id: 2 },                             // | /       \ |
         cityTwoEdges                                        // |/_________\|
     ),
+    // new Tile(
+    //     { type: CITY, id: 1, surroundingFields: [2] },
+    //     { type: FIELD, id: 2 },
+    //     { type: CITY, id: 3, surroundingFields: [2] },
+    //     { type: FIELD, id: 2 },
+    //     cityTwoEdges
+    // ),
     // new Tile(
     //     { type: CITY, id: 1, surroundingFields: [2] },
     //     { type: FIELD, id: 2 },
@@ -97,6 +145,20 @@ const tiles = [
     //     { type: ROAD, id: 4, fieldLeft: 1, fieldRight: 6 }, 
     //     roadThree
     // ),
+    // new Tile(
+    //     { type: FIELD, id: 1 }, 
+    //     { type: ROAD, id: 2, fieldLeft: 5, fieldRight: 1 }, 
+    //     { type: ROAD, id: 3, fieldLeft: 6, fieldRight: 5 }, 
+    //     { type: ROAD, id: 4, fieldLeft: 1, fieldRight: 6 }, 
+    //     roadThree
+    // ),
+    // new Tile(
+    //     { type: FIELD, id: 1 }, 
+    //     { type: ROAD, id: 2, fieldLeft: 5, fieldRight: 1 }, 
+    //     { type: ROAD, id: 3, fieldLeft: 6, fieldRight: 5 }, 
+    //     { type: ROAD, id: 4, fieldLeft: 1, fieldRight: 6 }, 
+    //     roadThree
+    // ),
     new Tile(                                               //  ___________
         { type: ROAD, id: 1, fieldLeft: 2, fieldRight: 3 }, // |     |     |
         { type: FIELD, id: 2 },                             // |     |     |
@@ -104,6 +166,48 @@ const tiles = [
         { type: FIELD, id: 3 },                             // |     |     |
         roadStraight                                        // |_____|_____|
     ),
+    // new Tile(
+    //     { type: ROAD, id: 1, fieldLeft: 2, fieldRight: 3 }, 
+    //     { type: FIELD, id: 2 }, 
+    //     { type: ROAD, id: 1, fieldLeft: 3, fieldRight: 2 }, 
+    //     { type: FIELD, id: 3 }, 
+    //     roadStraight
+    // ),
+    // new Tile(
+    //     { type: ROAD, id: 1, fieldLeft: 2, fieldRight: 3 }, 
+    //     { type: FIELD, id: 2 }, 
+    //     { type: ROAD, id: 1, fieldLeft: 3, fieldRight: 2 }, 
+    //     { type: FIELD, id: 3 }, 
+    //     roadStraight
+    // ),
+    // new Tile(
+    //     { type: ROAD, id: 1, fieldLeft: 2, fieldRight: 3 }, 
+    //     { type: FIELD, id: 2 }, 
+    //     { type: ROAD, id: 1, fieldLeft: 3, fieldRight: 2 }, 
+    //     { type: FIELD, id: 3 }, 
+    //     roadStraight
+    // ),
+    // new Tile(
+    //     { type: ROAD, id: 1, fieldLeft: 2, fieldRight: 3 }, 
+    //     { type: FIELD, id: 2 }, 
+    //     { type: ROAD, id: 1, fieldLeft: 3, fieldRight: 2 }, 
+    //     { type: FIELD, id: 3 }, 
+    //     roadStraight
+    // ),
+    // new Tile(
+    //     { type: ROAD, id: 1, fieldLeft: 2, fieldRight: 3 }, 
+    //     { type: FIELD, id: 2 }, 
+    //     { type: ROAD, id: 1, fieldLeft: 3, fieldRight: 2 }, 
+    //     { type: FIELD, id: 3 }, 
+    //     roadStraight
+    // ),
+    // new Tile(
+    //     { type: ROAD, id: 1, fieldLeft: 2, fieldRight: 3 }, 
+    //     { type: FIELD, id: 2 }, 
+    //     { type: ROAD, id: 1, fieldLeft: 3, fieldRight: 2 }, 
+    //     { type: FIELD, id: 3 }, 
+    //     roadStraight
+    // ),
     // new Tile(
     //     { type: ROAD, id: 1, fieldLeft: 2, fieldRight: 3 }, 
     //     { type: FIELD, id: 2 }, 
@@ -125,6 +229,55 @@ const tiles = [
     //     { type: ROAD, id: 2, fieldLeft: 1, fieldRight: 3 }, 
     //     roadTurn
     // ),
+    // new Tile(
+    //     { type: FIELD, id: 1 }, 
+    //     { type: FIELD, id: 1 }, 
+    //     { type: ROAD, id: 2, fieldLeft: 3, fieldRight: 1 }, 
+    //     { type: ROAD, id: 2, fieldLeft: 1, fieldRight: 3 }, 
+    //     roadTurn
+    // ),
+    // new Tile(
+    //     { type: FIELD, id: 1 }, 
+    //     { type: FIELD, id: 1 }, 
+    //     { type: ROAD, id: 2, fieldLeft: 3, fieldRight: 1 }, 
+    //     { type: ROAD, id: 2, fieldLeft: 1, fieldRight: 3 }, 
+    //     roadTurn
+    // ),
+    // new Tile(
+    //     { type: FIELD, id: 1 }, 
+    //     { type: FIELD, id: 1 }, 
+    //     { type: ROAD, id: 2, fieldLeft: 3, fieldRight: 1 }, 
+    //     { type: ROAD, id: 2, fieldLeft: 1, fieldRight: 3 }, 
+    //     roadTurn
+    // ),
+    // new Tile(
+    //     { type: FIELD, id: 1 }, 
+    //     { type: FIELD, id: 1 }, 
+    //     { type: ROAD, id: 2, fieldLeft: 3, fieldRight: 1 }, 
+    //     { type: ROAD, id: 2, fieldLeft: 1, fieldRight: 3 }, 
+    //     roadTurn
+    // ),
+    // new Tile(
+    //     { type: FIELD, id: 1 }, 
+    //     { type: FIELD, id: 1 }, 
+    //     { type: ROAD, id: 2, fieldLeft: 3, fieldRight: 1 }, 
+    //     { type: ROAD, id: 2, fieldLeft: 1, fieldRight: 3 }, 
+    //     roadTurn
+    // ),
+    // new Tile(
+    //     { type: FIELD, id: 1 }, 
+    //     { type: FIELD, id: 1 }, 
+    //     { type: ROAD, id: 2, fieldLeft: 3, fieldRight: 1 }, 
+    //     { type: ROAD, id: 2, fieldLeft: 1, fieldRight: 3 }, 
+    //     roadTurn
+    // ),
+    // new Tile(
+    //     { type: FIELD, id: 1 }, 
+    //     { type: FIELD, id: 1 }, 
+    //     { type: ROAD, id: 2, fieldLeft: 3, fieldRight: 1 }, 
+    //     { type: ROAD, id: 2, fieldLeft: 1, fieldRight: 3 }, 
+    //     roadTurn
+    // ),
     new Tile(                                           //  ___________
         { type: CITY, id: 1, surroundingFields: [2] },  // |         _/|
         { type: FIELD, id: 2 },                         // | CITY  _/  |
@@ -138,6 +291,27 @@ const tiles = [
     //     { type: FIELD, id: 2 }, 
     //     { type: CITY, id: 1, surroundingFields: [2] }, 
     //     cityCorner
+    // ),
+    // new Tile(
+    //     { type: CITY, id: 1, surroundingFields: [2] }, 
+    //     { type: FIELD, id: 2 }, 
+    //     { type: FIELD, id: 2 }, 
+    //     { type: CITY, id: 1, surroundingFields: [2] }, 
+    //     cityCorner
+    // ),
+    new Tile(                                           //  ___________
+        { type: CITY, id: 1, surroundingFields: [2] },  // | V       _/|
+        { type: FIELD, id: 2 },                         // | CITY  _/  |
+        { type: FIELD, id: 2 },                         // |     _/    |    
+        { type: CITY, id: 1, surroundingFields: [2] },  // |  __/ field|
+        cityCornerShield, false, true                   // |_/_________|
+    ),
+    // new Tile(
+    //     { type: CITY, id: 1, surroundingFields: [2] }, 
+    //     { type: FIELD, id: 2 }, 
+    //     { type: FIELD, id: 2 }, 
+    //     { type: CITY, id: 1, surroundingFields: [2] }, 
+    //     cityCornerShield, false, true
     // ),
     new Tile(                                                //  ___________
         { type: FIELD, id: 1 },                              // |           |
@@ -167,6 +341,27 @@ const tiles = [
     //     { type: FIELD, id: 1 }, 
     //     church, true
     // ),
+    // new Tile(
+    //     { type: FIELD, id: 1 }, 
+    //     { type: FIELD, id: 1 }, 
+    //     { type: FIELD, id: 1 }, 
+    //     { type: FIELD, id: 1 }, 
+    //     church, true
+    // ),
+    // new Tile(
+    //     { type: FIELD, id: 1 }, 
+    //     { type: FIELD, id: 1 }, 
+    //     { type: FIELD, id: 1 }, 
+    //     { type: FIELD, id: 1 }, 
+    //     church, true
+    // ),
+    new Tile(                                         //  ___________
+        { type: CITY, id: 1, surroundingFields: [] }, // |  V        |
+        { type: CITY, id: 1, surroundingFields: [] }, // |           |
+        { type: CITY, id: 1, surroundingFields: [] }, // |   CITY    |    
+        { type: CITY, id: 1, surroundingFields: [] }, // |           |
+        cityFourShield, false, true                   // |___________|
+    ),
     new Tile(                                               //  ___________
         { type: CITY, id: 1, surroundingFields: [4] },      // |         _/|
         { type: ROAD, id: 2, fieldLeft: 3, fieldRight: 4 }, // | CITY  _/  |
@@ -181,6 +376,27 @@ const tiles = [
     //     { type: CITY, id: 1, surroundingFields: [2] },
     //     cityCornerRoad
     // ),
+    // new Tile(
+    //     { type: CITY, id: 1, surroundingFields: [4] },
+    //     { type: ROAD, id: 2, fieldLeft: 3, fieldRight: 4 },
+    //     { type: ROAD, id: 2, fieldLeft: 4, fieldRight: 3 },
+    //     { type: CITY, id: 1, surroundingFields: [2] },
+    //     cityCornerRoad
+    // ),
+    new Tile(                                               //  ___________
+        { type: CITY, id: 1, surroundingFields: [4] },      // | V       _/|
+        { type: ROAD, id: 2, fieldLeft: 3, fieldRight: 4 }, // | CITY  _/  |
+        { type: ROAD, id: 2, fieldLeft: 4, fieldRight: 3 }, // |     _/   _|    
+        { type: CITY, id: 1, surroundingFields: [2] },      // |  __/  __/ |
+        cityCornerRoadShield, false, true                   // |_/____/____|
+    ),
+    // new Tile(
+    //     { type: CITY, id: 1, surroundingFields: [4] },
+    //     { type: ROAD, id: 2, fieldLeft: 3, fieldRight: 4 },
+    //     { type: ROAD, id: 2, fieldLeft: 4, fieldRight: 3 },
+    //     { type: CITY, id: 1, surroundingFields: [2] },
+    //     cityCornerRoadShield, false, true
+    // ),
     new Tile(                                             //  ___________
         { type: FIELD, id: 1 },                           // |\_________/|
         { type: CITY, id: 2, surroundingFields: [1, 3] }, // |           | 
@@ -188,12 +404,19 @@ const tiles = [
         { type: CITY, id: 2, surroundingFields: [1, 3] }, // | _________ |
         cityPipe                                          // |/_________\|
     ),
+    new Tile(                                             //  ___________
+        { type: FIELD, id: 1 },                           // |\_________/|
+        { type: CITY, id: 2, surroundingFields: [1, 3] }, // |  V        | 
+        { type: FIELD, id: 3 },                           // |   CITY    |    
+        { type: CITY, id: 2, surroundingFields: [1, 3] }, // | _________ |
+        cityPipeShield, false, true                       // |/_________\|
+    ),
     // new Tile(
     //     { type: FIELD, id: 1 },
     //     { type: CITY, id: 2, surroundingFields: [1, 3] },
     //     { type: FIELD, id: 3 },
     //     { type: CITY, id: 2, surroundingFields: [1, 3] },
-    //     cityPipe
+    //     cityPipeShield, false, true
     // ),
     new Tile(                                                  //  ___________
         { type: CITY, id: 1, surroundingFields: [5] },         // |\         /|
@@ -202,6 +425,13 @@ const tiles = [
         { type: ROAD, id: 4, fieldLeft: 5, fieldRight: 7 },    // |     |     |
         cityRoadThree                                          // |_____|_____|
     ),
+    // new Tile(                                                  
+    //     { type: CITY, id: 1, surroundingFields: [5] },
+    //     { type: ROAD, id: 2, fieldLeft: 6, fieldRight: 5 },
+    //     { type: ROAD, id: 3, fieldLeft: 7, fieldRight: 6 },
+    //     { type: ROAD, id: 4, fieldLeft: 5, fieldRight: 7 },
+    //     cityRoadThree                                       
+    // ),
     // new Tile(                                                  
     //     { type: CITY, id: 1, surroundingFields: [5] },
     //     { type: ROAD, id: 2, fieldLeft: 6, fieldRight: 5 },
@@ -223,6 +453,20 @@ const tiles = [
     //     { type: CITY, id: 1, surroundingFields: [2] },
     //     cityThree
     // ),
+    // new Tile(
+    //     { type: CITY, id: 1, surroundingFields: [2] },
+    //     { type: CITY, id: 1, surroundingFields: [2] },
+    //     { type: FIELD, id: 2 },
+    //     { type: CITY, id: 1, surroundingFields: [2] },
+    //     cityThree
+    // ),
+    new Tile(                                          //  ___________
+        { type: CITY, id: 1, surroundingFields: [2] }, // | V         |
+        { type: CITY, id: 1, surroundingFields: [2] }, // |   CITY    | 
+        { type: FIELD, id: 2 },                        // |   _____   |    
+        { type: CITY, id: 1, surroundingFields: [2] }, // | / field \ |
+        cityThreeShield, false, true                   // |/_________\|
+    ),
     new Tile(                                               //  ___________
         { type: CITY, id: 1, surroundingFields: [3, 4] },   // |           |
         { type: CITY, id: 1, surroundingFields: [3, 4] },   // |   CITY    | 
@@ -230,12 +474,19 @@ const tiles = [
         { type: CITY, id: 1, surroundingFields: [3, 4] },   // | /   |   \ |
         cityThreeRoad                                       // |/____|____\|
     ),
+    new Tile(                                               //  ___________
+        { type: CITY, id: 1, surroundingFields: [3, 4] },   // | V         |
+        { type: CITY, id: 1, surroundingFields: [3, 4] },   // |   CITY    | 
+        { type: ROAD, id: 2, fieldLeft: 3, fieldRight: 4 }, // |   _____   |    
+        { type: CITY, id: 1, surroundingFields: [3, 4] },   // | /   |   \ |
+        cityThreeRoadShield, false, true                    // |/____|____\|
+    ),
     // new Tile(
     //     { type: CITY, id: 1, surroundingFields: [3, 4] },
     //     { type: CITY, id: 1, surroundingFields: [3, 4] },
     //     { type: ROAD, id: 2, fieldLeft: 3, fieldRight: 4 },
     //     { type: CITY, id: 1, surroundingFields: [3, 4] },
-    //     cityThreeRoad
+    //     cityThreeRoadShield, false, true
     // ),
     new Tile(                                               //  ___________
         { type: CITY, id: 1, surroundingFields: [2] },      // |\_________/|
@@ -251,6 +502,9 @@ const tiles = [
     //     { type: CITY, id: 3, surroundingFields: [2] },
     //     cityTwoEdgesAdj
     // ),
+    Tile.initialTile(),
+    // Tile.initialTile(),
+    // Tile.initialTile(),
 ]
 
 const drawTiles = function () {

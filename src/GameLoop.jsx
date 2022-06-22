@@ -89,6 +89,9 @@ export default function GameLoop() {
                     tileCoords: [...newMapObj.tileCoords, ...oldMapObj.tileCoords],
                     players: { ...newMapObj.players },
                 }
+                if (oldMapObj.shields) {
+                    tempObj.shields = (tempObj.shields ?? 0) + oldMapObj.shields;
+                }
                 Object.keys(oldMapObj.players).forEach(playerId => {
                     if (tempObj.players[playerId]) {
                         tempObj.players[playerId]++;
@@ -136,19 +139,22 @@ export default function GameLoop() {
     const updateMapObjects = function (tile) {
         const objects = collectNewObjectsFromTile(tile.tile);
         updateObjects(objects.newRoads, setRoads, ROAD, tile.coords);
-        updateObjects(objects.newCities, setCities, CITY, tile.coords);
+        updateObjects(objects.newCities, setCities, CITY, tile.coords, tile.tile.hasShield);
         updateObjects(objects.newFields, setFields, FIELD, tile.coords);
         updateObjects(objects.newChurches, setChurches, CHURCH, tile.coords);
     }
 
-    const updateObjects = function (newObjects, setter, type, coords) {
+    const updateObjects = function (newObjects, setter, type, coords, hasShield = false) {
         setter(produce(objects => {
             newObjects.forEach(id => {
                 if (objects.find(obj => obj.id === id)) {
                     const obj = objects.find(obj => obj.id === id);
                     obj.tileCoords.push(coords);
+                    if (hasShield) obj.shields = (obj.shields ?? 0) + 1;
                 } else {
-                    objects.push({ id, type, tileCoords: [coords], players: {}, finished: false });
+                    const newObj = { id, type, tileCoords: [coords], players: {}, finished: false };
+                    if (hasShield) newObj.shields = 1;
+                    objects.push(newObj);
                 }
             })
         }))
@@ -216,10 +222,11 @@ export default function GameLoop() {
             finishedMapObjects.cities.forEach(city => {
                 if (Object.keys(city.players).length != 0) {
                     const winnerIds = determinePlayersToGetScores(city.players);
+                    const scoreBase = city.shields ? city.tileCoords.length + city.shields : city.tileCoords.length;
                     Object.keys(city.players).forEach(id => {
                         const player = players.find(p => p.id === id);
                         player.meeples += city.players[id];
-                        if (winnerIds.includes(id)) player.score += city.tileCoords.length * 2;
+                        if (winnerIds.includes(id)) player.score += scoreBase * 2;
                     })
                 }
             })
@@ -256,9 +263,10 @@ export default function GameLoop() {
             cities.forEach(city => {
                 if (!city.finished && Object.keys(city.players).length != 0) {
                     const winnerIds = determinePlayersToGetScores(city.players);
+                    const score = city.shields ? city.tileCoords.length + city.shields : city.tileCoords.length;
                     Object.keys(city.players).forEach(id => {
                         const player = players.find(p => p.id === id);
-                        if (winnerIds.includes(id)) player.score += city.tileCoords.length;
+                        if (winnerIds.includes(id)) player.score += score;
                     })
                 }
             });
@@ -316,7 +324,7 @@ export default function GameLoop() {
 
     const getScoreForField = function (field) {
         let score = 0;
-        fieldsToCities[field.id].forEach(cityId => {
+        fieldsToCities[field.id]?.forEach(cityId => {
             if (cities.find(c => c.id === cityId)?.finished) {
                 score += 3;
             }
