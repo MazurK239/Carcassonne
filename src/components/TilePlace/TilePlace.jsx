@@ -21,7 +21,14 @@ import {
 } from "../../utils"
 
 import "./TilePlace.css"
-import { churchesList, citiesList, fieldsList, roadsList, updatesAfterResolvingCollisions } from "../../recoil/mapObjects";
+import {
+    churchesList,
+    citiesList,
+    fieldsList,
+    roadsList,
+    updatesAfterResolvingCollisions,
+    fieldsToCitiesMapping
+} from "../../recoil/mapObjects";
 
 export default function TilePlace({
     coords,
@@ -40,6 +47,7 @@ export default function TilePlace({
     const [fields, setFields] = useRecoilState(fieldsList);
     const [cities, setCities] = useRecoilState(citiesList);
     const [churches, setChurches] = useRecoilState(churchesList);
+    const setFieldsToCities = useSetRecoilState(fieldsToCitiesMapping);
 
     const [tileInPlace, setTileInPlace] = useState(null);
     const [valid, setValid] = useState(false);
@@ -49,14 +57,31 @@ export default function TilePlace({
     const placeTile = function () {
         if (tile && valid && !tileInPlace) {
             const tileToPlace = getTileWithIds(tile, coords, gridTiles);
+            collectFieldsToCitiesMapping(tileToPlace);
             setTileInPlace(tileToPlace);
             setTilesInGrid(
                 produce((tiles) => {
                     tiles[`${coords[0]}_${coords[1]}`] = tileToPlace;
                 })
             )
-            setLastPlacedTile({tile: tileToPlace, coords });
+            setLastPlacedTile({ tile: tileToPlace, coords });
         }
+    }
+
+    const collectFieldsToCitiesMapping = function (tile) {
+        setFieldsToCities(produce(fieldsToCities => {
+            Object.values(tile.getSides()).forEach(obj => {
+                if (obj.type === CITY) {
+                    obj.surroundingFields.forEach(fieldId => {
+                        if (fieldsToCities[fieldId]) {
+                            fieldsToCities[fieldId].push(obj.id);
+                        } else {
+                            fieldsToCities[fieldId] = [obj.id];
+                        }
+                    })
+                }
+            })
+        }))
     }
 
     // finish map objects and get ready to place meeple
@@ -70,7 +95,7 @@ export default function TilePlace({
     // change ids on the placed meeples after the collisions are resolved
     useEffect(() => {
         if (meeple && updatesAfterCollisions[meeple.objectId]) {
-            setMeeple({...meeple, objectId: updatesAfterCollisions[meeple.objectId]});
+            setMeeple({ ...meeple, objectId: updatesAfterCollisions[meeple.objectId] });
         }
     }, [updatesAfterCollisions])
 

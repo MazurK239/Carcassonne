@@ -69,20 +69,32 @@ export function getTileWithIds(tile, coords, gridTiles) {
         newTile.top.fieldLeft = idsMap.get(tile.top.fieldLeft);
         newTile.top.fieldRight = idsMap.get(tile.top.fieldRight);
     }
+    if (newTile.top.surroundingFields) {
+        newTile.top.surroundingFields = newTile.top.surroundingFields.map(id => idsMap.get(id));
+    }
     newTile.left.id = idsMap.get(tile.left.id);
     if (newTile.left.fieldLeft) {
         newTile.left.fieldLeft = idsMap.get(tile.left.fieldLeft);
         newTile.left.fieldRight = idsMap.get(tile.left.fieldRight);
+    }
+    if (newTile.left.surroundingFields) {
+        newTile.left.surroundingFields = newTile.left.surroundingFields.map(id => idsMap.get(id));
     }
     newTile.bottom.id = idsMap.get(tile.bottom.id);
     if (newTile.bottom.fieldLeft) {
         newTile.bottom.fieldLeft = idsMap.get(tile.bottom.fieldLeft);
         newTile.bottom.fieldRight = idsMap.get(tile.bottom.fieldRight);
     }
+    if (newTile.bottom.surroundingFields) {
+        newTile.bottom.surroundingFields = newTile.bottom.surroundingFields.map(id => idsMap.get(id));
+    }
     newTile.right.id = idsMap.get(tile.right.id);
     if (newTile.right.fieldLeft) {
         newTile.right.fieldLeft = idsMap.get(tile.right.fieldLeft);
         newTile.right.fieldRight = idsMap.get(tile.right.fieldRight);
+    }
+    if (newTile.right.surroundingFields) {
+        newTile.right.surroundingFields = newTile.right.surroundingFields.map(id => idsMap.get(id));
     }
     if (tile.center) {
         newTile.center = { type: tile.center.type, id: uuidv4() };

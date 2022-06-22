@@ -5,7 +5,14 @@ import { lastPlacedTile } from "./recoil/tiles";
 import { playersList } from "./recoil/players";
 import { tilesInGrid } from "./recoil/grid";
 import { gameState } from "./recoil/game";
-import { churchesList, citiesList, fieldsList, roadsList, updatesAfterResolvingCollisions } from "./recoil/mapObjects";
+import {
+    churchesList,
+    citiesList,
+    fieldsList,
+    roadsList,
+    updatesAfterResolvingCollisions,
+    fieldsToCitiesMapping
+} from "./recoil/mapObjects";
 import {
     collectNewObjectsFromTile,
     collectCollisionsFromTile,
@@ -36,6 +43,7 @@ export default function GameLoop() {
     const [fields, setFields] = useRecoilState(fieldsList);
     const [cities, setCities] = useRecoilState(citiesList);
     const [churches, setChurches] = useRecoilState(churchesList);
+    const [fieldsToCities, setFieldsToCities] = useRecoilState(fieldsToCitiesMapping);
     const [players, setPlayers] = useRecoilState(playersList);
 
     useEffect(() => {
@@ -54,6 +62,7 @@ export default function GameLoop() {
         resolveCollisionsInTheListOfMapObjects(collisions.cities, setCities);
         resolveCollisionsInTheListOfMapObjects(collisions.fields, setFields);
         resolveCollisionsInTheGridTiles(collisions);
+        resolveCollisionsInTheFieldsToCitiesMapping(collisions);
         setUpdatesAfterCollisions({
             ...collisions.roads,
             ...collisions.cities,
@@ -71,7 +80,7 @@ export default function GameLoop() {
                 const oldMapObj = objects.find(obj => obj.id === oldId);
                 // find an object with the correct id
                 const newMapObj = objects.find(obj => obj.id === newObjects[oldId]);
-                // remove them from the list of objects
+                // remove it from the list of objects
                 objectsToReturn = objects.filter(obj => (obj.id != oldId) && (obj.id != newObjects[oldId]));
                 // add the new object with the updated coordinates and players
                 const tempObj =
@@ -98,6 +107,29 @@ export default function GameLoop() {
             getTilesWithResolvedCollisions(collisions.roads, tiles);
             getTilesWithResolvedCollisions(collisions.cities, tiles);
             getTilesWithResolvedCollisions(collisions.fields, tiles);
+        }))
+    }
+
+    const resolveCollisionsInTheFieldsToCitiesMapping = function(collisions) {
+        setFieldsToCities(produce(fieldsToCities => {
+            // change ids of cities
+            Object.keys(collisions.cities).forEach(oldCityId => {
+                Object.values(fieldsToCities).forEach(citiesList => {
+                    if (citiesList.includes(oldCityId)) {
+                        citiesList[citiesList.indexOf(oldCityId)] = collisions.cities[oldCityId];
+                    }
+                })
+            })
+            // change ids of fields
+            Object.keys(collisions.fields).forEach(oldFieldId => {
+                if (Object.keys(fieldsToCities).includes(oldFieldId)) {
+                    fieldsToCities[collisions.fields[oldFieldId]] = [
+                        ...fieldsToCities[collisions.fields[oldFieldId]],
+                        ...fieldsToCities[oldFieldId]
+                    ];
+                    delete fieldsToCities[oldFieldId];
+                }
+            })
         }))
     }
 
@@ -132,6 +164,7 @@ export default function GameLoop() {
             console.log('cities', cities);
             console.log('fields', fields);
             console.log('churches', churches);
+            console.log('fieldsToCities', fieldsToCities);
         }
     }, [objectsAdded])
 
@@ -145,8 +178,6 @@ export default function GameLoop() {
                     finishedMapObjects.roads.push(mapObj);
                 } else if (mapObj.type === CITY && !finishedMapObjects.cities.some(c => c.id === mapObj.id)) {
                     finishedMapObjects.cities.push(mapObj);
-                } else if (mapObj.type === FIELD && !finishedMapObjects.fields.some(f => f.id === mapObj.id)) {
-                    finishedMapObjects.fields.push(mapObj);
                 }
             }
         })
@@ -159,11 +190,6 @@ export default function GameLoop() {
         setCities(produce(cities => {
             finishedMapObjects.cities.forEach(city => {
                 cities.find(c => c.id === city.id).finished = true;
-            });
-        }))
-        setFields(produce(fields => {
-            finishedMapObjects.fields.forEach(field => {
-                fields.find(f => f.id === field.id).finished = true;
             });
         }))
         // find the just finished churches
@@ -246,6 +272,15 @@ export default function GameLoop() {
                 }
             });
             // add score for fields
+            fields.forEach(field => {
+                if (Object.keys(field.players).length != 0) {
+                    const winnerIds = determinePlayersToGetScores(field.players);
+                    Object.keys(field.players).forEach(id => {
+                        const player = players.find(p => p.id === id);
+                        if (winnerIds.includes(id)) player.score += getScoreForField(field);
+                    })
+                }
+            });
         }))
     }
 
@@ -276,6 +311,16 @@ export default function GameLoop() {
         if (gridTiles[`${coords[0] + 1}_${coords[1] + 1}`]) {
             score++;
         }
+        return score;
+    }
+
+    const getScoreForField = function (field) {
+        let score = 0;
+        fieldsToCities[field.id].forEach(cityId => {
+            if (cities.find(c => c.id === cityId)?.finished) {
+                score += 3;
+            }
+        })
         return score;
     }
 

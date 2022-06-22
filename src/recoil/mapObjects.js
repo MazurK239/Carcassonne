@@ -24,3 +24,8 @@ export const updatesAfterResolvingCollisions = atom({
     key: "updatesAfterResolvingCollisions",
     default: {},
 })
+
+export const fieldsToCitiesMapping = atom({
+    key: "fieldsToCitiesMapping",
+    default: {},
+})

@@ -37,7 +37,7 @@ export default class Tile {
     }
 
     static initialTile() {
-        return new Tile({type: CITY, id: 1}, {type: ROAD, id: 2, fieldLeft: 3, fieldRight: 4}, {type: FIELD, id: 3}, {type: ROAD, id: 2, fieldLeft: 4, fieldRight: 3}, InitialTilePath);
+        return new Tile({type: CITY, id: 1, surroundingFields: [4]}, {type: ROAD, id: 2, fieldLeft: 3, fieldRight: 4}, {type: FIELD, id: 3}, {type: ROAD, id: 2, fieldLeft: 4, fieldRight: 3}, InitialTilePath);
     }
 
     static rotateClockwise(tile) {
