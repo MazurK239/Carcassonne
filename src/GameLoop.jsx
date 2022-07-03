@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import produce from "immer";
-import { useRecoilState, useRecoilValue } from "recoil";
-import { lastPlacedTile } from "./recoil/tiles";
-import { playersList } from "./recoil/players";
-import { tilesInGrid } from "./recoil/grid";
+import { useRecoilState, useRecoilValue, useResetRecoilState, useSetRecoilState } from "recoil";
+import { playersList, activePlayer } from "./recoil/players";
+import { gridParams, tilesInGrid } from "./recoil/grid";
+import { lastPlacedTile, tileIndex, tilesList } from "./recoil/tiles";
 import { gameState } from "./recoil/game";
 import {
     churchesList,
@@ -29,7 +29,9 @@ import {
     CHURCH,
     FINAL_SCORE_CALCULATION,
     FINISHED,
+    ADD_PLAYERS,
 } from "./constants";
+import drawTiles from "./tiles/tilesList";
 
 export default function GameLoop() {
 
@@ -45,6 +47,37 @@ export default function GameLoop() {
     const [churches, setChurches] = useRecoilState(churchesList);
     const [fieldsToCities, setFieldsToCities] = useRecoilState(fieldsToCitiesMapping);
     const [players, setPlayers] = useRecoilState(playersList);
+
+    const resetPlayers = useResetRecoilState(playersList);
+    const resetActivePlayer = useResetRecoilState(activePlayer);
+    const resetRoads = useResetRecoilState(roadsList);
+    const resetFields = useResetRecoilState(fieldsList);
+    const resetCities = useResetRecoilState(citiesList);
+    const resetChurches = useResetRecoilState(churchesList);
+    const resetGrid = useResetRecoilState(gridParams);
+    const resetUpdatesAfterResolvingCollisions = useResetRecoilState(updatesAfterResolvingCollisions);
+    const resetGridTiles = useResetRecoilState(tilesInGrid);
+    const resetTiles = useSetRecoilState(tilesList);
+    const resetTileIndex = useResetRecoilState(tileIndex);
+    const resetLastPlacedTile = useResetRecoilState(lastPlacedTile);
+
+    // reset everything once new game starts
+    useEffect(() => {
+        if (gameStatus === ADD_PLAYERS) {
+            resetPlayers();
+            resetActivePlayer();
+            resetCities();
+            resetChurches();
+            resetFields();
+            resetRoads();
+            resetUpdatesAfterResolvingCollisions();
+            resetGrid();
+            resetGridTiles();
+            resetTiles(drawTiles());
+            resetTileIndex();
+            resetLastPlacedTile();
+        }
+    }, [gameStatus])
 
     useEffect(() => {
         if (lastTile) {
@@ -113,23 +146,24 @@ export default function GameLoop() {
         }))
     }
 
-    const resolveCollisionsInTheFieldsToCitiesMapping = function(collisions) {
+    const resolveCollisionsInTheFieldsToCitiesMapping = function (collisions) {
         setFieldsToCities(produce(fieldsToCities => {
             // change ids of cities
             Object.keys(collisions.cities).forEach(oldCityId => {
-                Object.values(fieldsToCities).forEach(citiesList => {
-                    if (citiesList.includes(oldCityId)) {
-                        citiesList[citiesList.indexOf(oldCityId)] = collisions.cities[oldCityId];
+                Object.values(fieldsToCities).forEach(citiesSet => {
+                    if (citiesSet.has(oldCityId)) {
+                        citiesSet.delete(oldCityId);
+                        citiesSet.add(collisions.cities[oldCityId]);
                     }
                 })
             })
             // change ids of fields
             Object.keys(collisions.fields).forEach(oldFieldId => {
                 if (Object.keys(fieldsToCities).includes(oldFieldId)) {
-                    fieldsToCities[collisions.fields[oldFieldId]] = [
+                    fieldsToCities[collisions.fields[oldFieldId]] = new Set([
                         ...fieldsToCities[collisions.fields[oldFieldId]],
                         ...fieldsToCities[oldFieldId]
-                    ];
+                    ]);
                     delete fieldsToCities[oldFieldId];
                 }
             })
@@ -254,9 +288,13 @@ export default function GameLoop() {
             roads.forEach(road => {
                 if (!road.finished && Object.keys(road.players).length != 0) {
                     const winnerIds = determinePlayersToGetScores(road.players);
+                    const score = road.tileCoords.length;
                     Object.keys(road.players).forEach(id => {
                         const player = players.find(p => p.id === id);
-                        if (winnerIds.includes(id)) player.score += road.tileCoords.length;
+                        if (winnerIds.includes(id)) {
+                            player.score += score;
+                            console.log('Score for road ' + road.id + ": " + score);
+                        }
                     })
                 }
             });
@@ -266,16 +304,23 @@ export default function GameLoop() {
                     const score = city.shields ? city.tileCoords.length + city.shields : city.tileCoords.length;
                     Object.keys(city.players).forEach(id => {
                         const player = players.find(p => p.id === id);
-                        if (winnerIds.includes(id)) player.score += score;
+                        if (winnerIds.includes(id)) {
+                            player.score += score;
+                            console.log('Score for city ' + city.id + ": " + score);
+                        }
                     })
                 }
             });
             churches.forEach(church => {
                 if (!church.finished && Object.keys(church.players).length != 0) {
                     const winnerIds = determinePlayersToGetScores(church.players);
+                    const score = getScoreForChurch(church);
                     Object.keys(church.players).forEach(id => {
                         const player = players.find(p => p.id === id);
-                        if (winnerIds.includes(id)) player.score += getScoreForChurch(church);
+                        if (winnerIds.includes(id)) {
+                            player.score += score;
+                            console.log('Score for church ' + church.id + ": " + score);
+                        }
                     })
                 }
             });
@@ -283,16 +328,20 @@ export default function GameLoop() {
             fields.forEach(field => {
                 if (Object.keys(field.players).length != 0) {
                     const winnerIds = determinePlayersToGetScores(field.players);
+                    const score = getScoreForField(field);
                     Object.keys(field.players).forEach(id => {
                         const player = players.find(p => p.id === id);
-                        if (winnerIds.includes(id)) player.score += getScoreForField(field);
+                        if (winnerIds.includes(id)) {
+                            player.score += score;
+                            console.log('Score for field ' + field.id + ": " + score);
+                        }
                     })
                 }
             });
         }))
     }
 
-    const getScoreForChurch = function(church) {
+    const getScoreForChurch = function (church) {
         const coords = church.tileCoords[0];
         let score = 1;
         if (gridTiles[`${coords[0] - 1}_${coords[1] - 1}`]) {

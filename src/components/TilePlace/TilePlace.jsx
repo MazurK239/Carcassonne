@@ -8,7 +8,7 @@ import {
     CITY,
     FIELD,
     CHURCH,
-    NEW_GAME
+    ADD_PLAYERS
 } from "../../constants";
 import { gameState } from "../../recoil/game";
 import { tilesInGrid } from "../../recoil/grid";
@@ -72,12 +72,13 @@ export default function TilePlace({
         setFieldsToCities(produce(fieldsToCities => {
             Object.values(tile.getSides()).forEach(obj => {
                 if (obj.type === CITY) {
+                    console.log('adding a city ' + obj.id)
                     obj.surroundingFields.forEach(fieldId => {
-                        if (fieldsToCities[fieldId]) {
-                            fieldsToCities[fieldId].push(obj.id);
-                        } else {
-                            fieldsToCities[fieldId] = [obj.id];
+                        console.log('adding a field ' + fieldId)
+                        if (!fieldsToCities[fieldId]) {
+                            fieldsToCities[fieldId] = new Set();
                         }
+                        fieldsToCities[fieldId].add(obj.id);
                     })
                 }
             })
@@ -137,7 +138,7 @@ export default function TilePlace({
 
     // reset the tiles when the new game is ready to begin
     useEffect(() => {
-        if (gameStatus === NEW_GAME) {
+        if (gameStatus === ADD_PLAYERS) {
             setTileInPlace(null);
             setMeeple(null);
         }

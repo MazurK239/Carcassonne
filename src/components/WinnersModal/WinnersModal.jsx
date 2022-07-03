@@ -1,50 +1,25 @@
-import React, { useState } from "react";
-import produce from "immer";
-import { useRecoilState, useRecoilValue, useResetRecoilState, useSetRecoilState } from "recoil";
+import React from "react";
+import { useRecoilState, useRecoilValue } from "recoil";
 
-import { ADD_PLAYERS, PLACE_TILE, NEW_GAME, FINISHED } from "../../constants"
+import { ADD_PLAYERS, NEW_GAME, FINISHED } from "../../constants"
 import { Dialog } from "@mui/material";
 import { gameState } from "../../recoil/game";
-import { activePlayer, playersList } from "../../recoil/players";
-import { churchesList, citiesList, fieldsList, roadsList, updatesAfterResolvingCollisions } from "../../recoil/mapObjects";
+import { playersList } from "../../recoil/players";
 import { Button, DialogTitle } from "@mui/material";
-import { gridParams, tilesInGrid } from "../../recoil/grid";
-import { lastPlacedTile, tileIndex, tilesList } from "../../recoil/tiles";
 
 import "./WinnersModal.css"
-import drawTiles from "../../tiles/tilesList";
 
 export default function WinnersModal() {
 
     const [gameStatus, setGameStatus] = useRecoilState(gameState);
     const players = useRecoilValue(playersList);
-    const resetPlayers = useResetRecoilState(playersList);
-    const resetActivePlayer = useResetRecoilState(activePlayer);
-    const resetRoads = useResetRecoilState(roadsList);
-    const resetFields = useResetRecoilState(fieldsList);
-    const resetCities = useResetRecoilState(citiesList);
-    const resetChurches = useResetRecoilState(churchesList);
-    const resetGrid = useResetRecoilState(gridParams);
-    const resetUpdatesAfterResolvingCollisions = useResetRecoilState(updatesAfterResolvingCollisions);
-    const resetGridTiles = useResetRecoilState(tilesInGrid);
-    const resetTiles = useSetRecoilState(tilesList);
-    const resetTileIndex = useResetRecoilState(tileIndex);
-    const resetLastPlacedTile = useResetRecoilState(lastPlacedTile);
+
+    const handleClose = function () {
+        setGameStatus(NEW_GAME);
+    }
 
     const startNewGame = function () {
-        setGameStatus(NEW_GAME);
-        resetPlayers();
-        resetActivePlayer();
-        resetCities();
-        resetChurches();
-        resetFields();
-        resetRoads();
-        resetUpdatesAfterResolvingCollisions();
-        resetGrid();
-        resetGridTiles();
-        resetTiles(drawTiles());
-        resetTileIndex();
-        resetLastPlacedTile();
+        setGameStatus(ADD_PLAYERS);
     }
 
     const determineWinners = function () {
@@ -64,6 +39,7 @@ export default function WinnersModal() {
     return (
         <Dialog
             open={gameStatus === FINISHED}
+            onClose={handleClose}
         >
             <DialogTitle>The winner(s):</DialogTitle>
             <div className="winner-info">
